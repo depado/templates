@@ -17,10 +17,13 @@ help:
 build: ## Build
 	go build $(LDFLAGS) -o $(BINARY)
 
+.PHONY: install
+install:
+	go install $(LDFLAGS)
+
 .PHONY: tmp
 tmp: ## Build and output the binary in /tmp
 	go build $(LDFLAGS) -o /tmp/$(BINARY)
-
 {{ if .docker }}
 .PHONY: docker
 docker: ## Build the docker image
@@ -34,7 +37,6 @@ release: ## Create a new release on Github
 snapshot: ## Create a new snapshot release
 	goreleaser --snapshot --rm-dist
 {{ end }}
-
 .PHONY: lint
 lint: ## Runs the linter
 	$(GOPATH)/bin/golangci-lint run --exclude-use-default=false

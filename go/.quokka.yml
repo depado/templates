@@ -24,33 +24,21 @@ variables:
     default: "MIT"
     help: "License to be applied to the project. Select the last option if you don't want a license."
     prompt: "License"
+  gin:
+    confirm: true
+    prompt: "Add gin router?"
   docker:
     confirm: true
     prompt: "Add Dockerfile and dockerignore?"
   renovate:
     confirm: true
     prompt: "Add renovate config?"
-  ci:
+  gha:
     confirm: true
-    prompt: "Add CI config?"
-    variables:
-      gha:
-        confirm: true
-        prompt: "Add GHA workflows?"
-      drone:
-        confirm: false
-        prompt: "Add Drone config?"
+    prompt: "Add GHA workflows?"
+  drone:
+    confirm: false
+    prompt: "Add Drone config?"
   # goreleaser:
   #   confirm: true
   #   prompt: "Enable goreleaser?"
-  # drone:
-  #   confirm: true
-  #   prompt: "Add drone config?"
-  #   variables:
-  #     telegram:
-  #       confirm: true
-  #       prompt: "Add Telegram notifications?"
-  #       variables:
-  #         chan:
-  #           prompt: "Channel ID or user ID?"
-  #           required: true

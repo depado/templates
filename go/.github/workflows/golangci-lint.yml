@@ -1,12 +1,10 @@
 ---
-if: ci_gha
-copy: true
+if: gha
 ---
 name: golangci-lint
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
 
 permissions:

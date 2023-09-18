@@ -23,8 +23,8 @@ Finally the build date corresponds to the date the binary was built.
 If both values are "unknown" make sure to build project-name with "make".
 `
 
-// VersionCmd is a command that will display the build number and version (if any)
-var VersionCmd = &cobra.Command{
+// versionCmd is a command that will display the build number and version (if any)
+var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Show build, version and build date",
 	Long:  versionHelp,

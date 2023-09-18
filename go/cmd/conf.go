@@ -15,9 +15,30 @@ type LogConf struct {
 	Format string `mapstructure:"format"`
 	Caller bool   `mapstructure:"caller"`
 }
+{{ if .gin }}
+type ServerConf struct {
+	Host       string `mapstructure:"host"`
+	Port       int    `mapstructure:"port"`
+	Mode       string `mapstructure:"mode"`
+	Instrument bool   `mapstructure:"instrument"`
 
+	Cors CorsConf `mapstructure:"cors"`
+}
+
+type CorsConf struct {
+	Enabled bool     `mapstructure:"enabled"`
+	Methods []string `mapstructure:"methods"`
+	Headers []string `mapstructure:"headers"`
+	Expose  []string `mapstructure:"expose"`
+	Origins []string `mapstructure:"origins"`
+	All     bool     `mapstructure:"all"`
+}
+{{ end }}
 type Conf struct {
-	Log LogConf `mapstructure:"log"`
+	Log    LogConf    `mapstructure:"log"`
+	{{- if .gin }}
+	Server ServerConf `mapstructure:"server"`
+	{{- end }}
 }
 
 // NewLogger will return a new logger

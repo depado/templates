@@ -8,4 +8,4 @@
 
 </h2>
 
-<h3 align="center">{{ .description }}</h3>
+<h2 align="center">{{ .description }}</h2>
