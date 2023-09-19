@@ -17,10 +17,12 @@ type LogConf struct {
 }
 {{ if .gin }}
 type ServerConf struct {
-	Host       string `mapstructure:"host"`
-	Port       int    `mapstructure:"port"`
-	Mode       string `mapstructure:"mode"`
-	Instrument bool   `mapstructure:"instrument"`
+	Host          string `mapstructure:"host"`
+	Port          int    `mapstructure:"port"`
+	Mode          string `mapstructure:"mode"`
+	Instrument    bool   `mapstructure:"instrument"`
+	UnifiedLogger bool   `mapstructure:"unified-logger"`
+	LogRequests   bool   `mapstructure:"log-requests"`
 
 	Cors CorsConf `mapstructure:"cors"`
 }
@@ -42,7 +44,7 @@ type Conf struct {
 }
 
 // NewLogger will return a new logger
-func NewLogger(c *Conf) zerolog.Logger {
+func NewLogger(c *Conf) *zerolog.Logger {
 	// Level parsing
 	warns := []string{}
 	lvl, err := zerolog.ParseLevel(c.Log.Level)
@@ -73,7 +75,7 @@ func NewLogger(c *Conf) zerolog.Logger {
 		log.Warn().Msg(w)
 	}
 
-	return log.Logger
+	return &log.Logger
 }
 
 // NewConf will parse and return the configuration

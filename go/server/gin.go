@@ -12,7 +12,8 @@ import (
 	"{{ .gitserver }}/{{ .owner }}/{{ .name }}/cmd"
 )
 
-func setMode(mode string, l zerolog.Logger) {
+// setMode is used to set the proper gin mode.
+func setMode(mode string, l *zerolog.Logger) {
 	switch mode {
 	case "debug":
 		gin.SetMode(gin.DebugMode)
@@ -26,15 +27,28 @@ func setMode(mode string, l zerolog.Logger) {
 	}
 }
 
-func NewGinEngine(c *cmd.Conf, l zerolog.Logger, cc *cors.Config) *gin.Engine {
+// NewGinEngine will configure and return a new gin engine.
+func NewGinEngine(c *cmd.Conf, l *zerolog.Logger, cc *cors.Config) *gin.Engine {
 	setMode(c.Server.Mode, l)
 	r := gin.New()
+
+	// Setup instrumentation if configured
 	if c.Server.Instrument {
 		p := ginprom.New(ginprom.Engine(r))
 		r.Use(p.Instrument())
 	}
+
+	// Setup logging
+	if c.Server.UnifiedLogger {
+		r.Use(ZerologLogger(l))
+	} else {
+		r.Use(gin.Logger())
+	}
+
+	// Recovers on panic
 	r.Use(gin.Recovery())
 
+	// Setup cors is configured
 	if cc != nil {
 		r.Use(cors.New(*cc))
 	}

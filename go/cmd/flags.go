@@ -18,6 +18,7 @@ func addServerFlags(c *cobra.Command) {
 	c.PersistentFlags().Int("server.port", 8080, "port on which the server should listen")
 	c.PersistentFlags().String("server.mode", "release", "server mode can be either 'debug', 'test' or 'release'")
 	c.PersistentFlags().Bool("server.instrument", true, "enable prometheus instrumentation")
+	c.PersistentFlags().Bool("server.unified-logger", true, "use zerolog to log requests instead of gin's default logger")
 
 	// CORS related flags
 	c.PersistentFlags().Bool("server.cors.enabled", false, "enable CORS")
@@ -25,7 +26,7 @@ func addServerFlags(c *cobra.Command) {
 	c.PersistentFlags().StringSlice("server.cors.headers", []string{"Origin", "Authorization", "Content-Type"}, "array of allowed headers")
 	c.PersistentFlags().StringSlice("server.cors.expose", []string{}, "array of exposed headers")
 	c.PersistentFlags().StringSlice("server.cors.origins", []string{}, "array of allowed origins (overwritten if all is active)")
-	c.PersistentFlags().Bool("server.cors.all", false, "defines that all origins are allowed")
+	c.PersistentFlags().Bool("server.cors.all", false, "allow all origins (overrides origins if set)")
 }
 {{ end }}
 // AddConfigurationFlag adds support to provide a configuration file on the

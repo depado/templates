@@ -19,19 +19,15 @@ func run() {
 	}
 
 	lg := cmd.NewLogger(conf)
-	{{ if not .gin -}}
-	lg.Info().Msg("hello world")
-	{{- end }}
-	{{ if .gin -}}
+	lg.Info().Str("version", cmd.Version).Str("build", cmd.Build).Str("date", cmd.Time).Send()
+	{{- if .gin }}
+
 	cc, err := server.NewCors(conf, lg)
 	if err != nil {
 		lg.Fatal().Err(err).Msg("unable to setup cors")
 	}
 	e := server.NewGinEngine(conf, lg, cc)
-	r := router.New(conf, lg, e)
-	if err = r.Listen(); err != nil {
-		lg.Fatal().Err(err).Msg("unable to run")
-	}
+	router.New(conf, lg, e).Listen()
 	{{- end }}
 }
 

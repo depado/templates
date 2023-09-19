@@ -27,6 +27,9 @@ variables:
   gin:
     confirm: true
     prompt: "Add gin router?"
+  conf:
+    confirm: true
+    prompt: "Generate base config file?"
   docker:
     confirm: true
     prompt: "Add Dockerfile and dockerignore?"

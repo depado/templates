@@ -14,7 +14,7 @@ import (
 )
 
 // NewCorsConfig generates a new cors config
-func NewCors(c *cmd.Conf, l zerolog.Logger) (*cors.Config, error) {
+func NewCors(c *cmd.Conf, l *zerolog.Logger) (*cors.Config, error) {
 	if !c.Server.Cors.Enabled {
 		return nil, nil
 	}

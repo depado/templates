@@ -27,7 +27,7 @@ tmp: ## Build and output the binary in /tmp
 {{ if .docker }}
 .PHONY: docker
 docker: ## Build the docker image
-	docker build -t $(BINARY):latest -t $(BINARY):$(BUILD) -f Dockerfile .
+	docker build -t $(BINARY):latest $(if $(filter undefined,$(BUILD)),,-t $(BINARY):$(BUILD) )-f Dockerfile .
 {{ end }}{{ if .goreleaser }}
 .PHONY: release
 release: ## Create a new release on Github

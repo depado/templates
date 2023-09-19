@@ -1,0 +1,27 @@
+---
+if: conf
+---
+# This is a generated configuration file for {{ .name }}, all possible
+# configurable values are displayed here with their default values.
+
+# Logger configuration
+log:
+  level: info   # one of debug, info, warn, error or fatal
+  format: json  # one of console, json
+  caller: false # display the file and line where the call was made
+{{ if .gin -}}
+# Server configuration
+server:
+  host: "127.0.0.1"    # host on which the server should listen
+  port: 8080           # port on which the server should listen
+  mode: release        # server mode can be either 'debug', 'test' or 'release'
+  instrument: true     # enable prometheus instrumentation
+  unified-logger: true # use zerolog to log requests instead of gin's default logger
+  cors:
+    enabled: false # enable CORS
+    methods: [GET, PUT, POST, DELETE, OPTION, PATCH] # array of allowed method when cors is enabled
+    headers: [Origin, Authorization, Content-Type]   # array of allowed headers when cors is enabled
+    expose: []  # array of exposed headers
+    origins: [] # array of allowed origins (overwritten if all is active)
+    all: false  # allow all origins (overrides origins if set)
+{{ end -}}
