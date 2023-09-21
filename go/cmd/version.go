@@ -8,9 +8,9 @@ import (
 
 // Build number and versions injected at compile time
 var (
-	Version = "unknown"
-	Build   = "unknown"
-	Time    = "unknown"
+	Version   = "unknown"
+	Build     = "unknown"
+	BuildDate = "unknown"
 )
 
 // Descriptive help text for version command
@@ -29,6 +29,6 @@ var versionCmd = &cobra.Command{
 	Short: "Show build, version and build date",
 	Long:  versionHelp,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("Build: %s\nVersion: %s\nBuild Date: %s\n", Build, Version, Time)
+		fmt.Printf("Build: %s\nVersion: %s\nBuild Date: %s\n", Build, Version, BuildDate)
 	},
 }

@@ -2,12 +2,13 @@
 
 export CGO_ENABLED=0
 export VERSION=$(shell git describe --abbrev=0 --tags 2> /dev/null || echo "0.1.0")
+export SUFFIX=$(shell git describe --exact-match > /dev/null 2>&1 || echo "-dev")
 export BUILD=$(shell git rev-parse HEAD 2> /dev/null || echo "undefined")
 export BUILDDATE=$(shell LANG=en_us_88591 date)
 BINARY={{ .name }}
-LDFLAGS=-ldflags "-X '{{ .gitserver }}/{{ .owner }}/{{ .name }}/cmd.Version=$(VERSION)' \
+LDFLAGS=-ldflags "-X '{{ .gitserver }}/{{ .owner }}/{{ .name }}/cmd.Version=$(VERSION)$(SUFFIX)' \
 		-X '{{ .gitserver }}/{{ .owner }}/{{ .name }}/cmd.Build=$(BUILD)' \
-		-X '{{ .gitserver }}/{{ .owner }}/{{ .name }}/cmd.Time=$(BUILDDATE)' -s -w"
+		-X '{{ .gitserver }}/{{ .owner }}/{{ .name }}/cmd.BuildDate=$(BUILDDATE)' -s -w"
 
 .PHONY: help
 help:
@@ -31,11 +32,11 @@ docker: ## Build the docker image
 {{ end }}{{ if .goreleaser }}
 .PHONY: release
 release: ## Create a new release on Github
-	goreleaser
+	VERSION="$(VERSION)" BUILD="$(BUILD)" BUILDDATE="$(BUILDDATE)" goreleaser release
 
 .PHONY: snapshot
 snapshot: ## Create a new snapshot release
-	goreleaser --snapshot --rm-dist
+	VERSION="$(VERSION)" BUILD="$(BUILD)" BUILDDATE="$(BUILDDATE)" goreleaser release --snapshot --clean
 {{ end }}
 .PHONY: lint
 lint: ## Runs the linter

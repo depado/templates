@@ -1,5 +1,5 @@
 ---
-if: gha
+if: ci && ci_type == "GHA"
 ---
 name: golangci-lint
 on:

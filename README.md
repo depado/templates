@@ -25,8 +25,8 @@ This template can be used to generate a base Go application.
 - Configurable [zerolog](https://github.com/rs/zerolog) logger (format, level, caller)
 - Inject version information (commit hash, latest tag, build date) with Makefile
 - License selector
-- Optional renovate configuration
-- Optional example configuration file with default values
+- Optional [renovate](https://github.com/renovatebot/renovate) configuration
+- Optional example configuration file with default values for the app
 - Optional docker support
     - Dockerfile with multi-step build with [distroless](https://github.com/GoogleContainerTools/distroless)
       container image for small and secure images
@@ -41,4 +41,5 @@ This template can be used to generate a base Go application.
     - CORS customization and support
     - Prometheus instrumentation using [ginprom](https://github.com/Depado/ginprom)
     - Optional unified logger instead of gin's default one
+- Optional [goreleaser](https://goreleaser.com/) config
 
