@@ -19,7 +19,7 @@ func run() {
 	}
 
 	lg := cmd.NewLogger(conf)
-	lg.Info().Str("version", cmd.Version).Str("build", cmd.Build).Str("date", cmd.Time).Send()
+	lg.Info().Str("version", cmd.Version).Str("build", cmd.Build).Str("date", cmd.BuildDate).Send()
 	{{- if .gin }}
 
 	cc, err := server.NewCors(conf, lg)
