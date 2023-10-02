@@ -8,7 +8,7 @@ require (
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.1
 	{{ end -}}
-	github.com/rs/zerolog v1.30.0
+	github.com/rs/zerolog v1.31.0
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
 )
