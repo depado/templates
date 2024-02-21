@@ -4,7 +4,7 @@ go 1.22.0
 
 require (
 	{{ if .gin -}}
-	github.com/Depado/ginprom v1.8.0
+	github.com/Depado/ginprom v1.8.1
 	github.com/gin-contrib/cors v1.5.0
 	github.com/gin-gonic/gin v1.9.1
 	{{ end -}}
