@@ -39,12 +39,6 @@ variables:
   ci:
     confirm: true
     prompt: "Add CI config?"
-    variables:
-      type:
-        values: ["GHA", "Drone", ""]
-        default: "GHA"
-        help: "CI system to generate a config for. Select the last option if none match your need."
-        prompt: "CI type"
   goreleaser:
     confirm: true
     prompt: "Enable goreleaser?"
