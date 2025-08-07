@@ -2,7 +2,7 @@
 if: docker
 ---
 # Build Step
-FROM golang:1.24.6-alpine@sha256:eb37f58646a901dc7727cf448cae36daaefaba79de33b5058dab79aa4c04aefb as builder
+FROM golang:1.24.6-alpine@sha256:c8c5f95d64aa79b6547f3b626eb84b16a7ce18a139e3e9ca19a8c078b85ba80d as builder
 
 # Dependencies
 RUN apk update && apk add --no-cache make git
