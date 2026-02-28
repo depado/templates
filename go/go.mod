@@ -6,7 +6,7 @@ require (
 	{{ if .gin -}}
 	github.com/Depado/ginprom v1.8.3
 	github.com/gin-contrib/cors v1.7.6
-	github.com/gin-gonic/gin v1.11.0
+	github.com/gin-gonic/gin v1.12.0
 	{{ end -}}
 	github.com/rs/zerolog v1.34.0
 	github.com/spf13/cobra v1.10.2
