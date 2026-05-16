@@ -4,56 +4,51 @@ if: gin
 package server
 
 import (
+	"log/slog"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rs/zerolog"
 )
 
-// ZerologLogger logs a gin HTTP request with the provided logger.
-func ZerologLogger(logger *zerolog.Logger) gin.HandlerFunc {
+// SlogLogger logs a gin HTTP request with the provided slog logger.
+func SlogLogger(logger *slog.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
-
-		start := time.Now() // Start timer
+		start := time.Now()
 		path := c.Request.URL.Path
 		raw := c.Request.URL.RawQuery
 
 		// Process request
 		c.Next()
 
-		// Fill the params
-		param := gin.LogFormatterParams{}
-
-		param.TimeStamp = time.Now() // Stop timer
-		param.Latency = param.TimeStamp.Sub(start)
-		if param.Latency > time.Minute {
-			param.Latency = param.Latency.Truncate(time.Second)
+		latency := time.Since(start)
+		if latency > time.Minute {
+			latency = latency.Truncate(time.Second)
 		}
 
-		param.ClientIP = c.ClientIP()
-		param.Method = c.Request.Method
-		param.StatusCode = c.Writer.Status()
-		param.ErrorMessage = c.Errors.ByType(gin.ErrorTypePrivate).String()
-		param.BodySize = c.Writer.Size()
 		if raw != "" {
 			path = path + "?" + raw
 		}
-		param.Path = path
 
-		// Log using the params
-		var logEvent *zerolog.Event
-		if c.Writer.Status() >= 500 {
-			logEvent = logger.Error()
-		} else {
-			logEvent = logger.Info()
+		status := c.Writer.Status()
+		errMsg := c.Errors.ByType(gin.ErrorTypePrivate).String()
+
+		attrs := []any{
+			"client_ip", c.ClientIP(),
+			"method", c.Request.Method,
+			"status", status,
+			"body_size", c.Writer.Size(),
+			"path", path,
+			"latency", latency.String(),
 		}
 
-		logEvent.Str("client_id", param.ClientIP).
-			Str("method", param.Method).
-			Int("status_code", param.StatusCode).
-			Int("body_size", param.BodySize).
-			Str("path", param.Path).
-			Str("latency", param.Latency.String()).
-			Msg(param.ErrorMessage)
+		if errMsg != "" {
+			attrs = append(attrs, "error", errMsg)
+		}
+
+		if status >= 500 {
+			logger.Error("request", attrs...)
+		} else {
+			logger.Info("request", attrs...)
+		}
 	}
 }

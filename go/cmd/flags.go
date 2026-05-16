@@ -6,9 +6,10 @@ import (
 
 // addLoggerFlags adds support to configure the level of the logger.
 func addLoggerFlags(c *cobra.Command) {
-	c.PersistentFlags().String("log.level", "info", "one of debug, info, warn, error or fatal")
-	c.PersistentFlags().String("log.format", "console", `one of "console" or "json"`)
-	c.PersistentFlags().Bool("log.caller", false, "display the file and line where the call was made")
+	c.PersistentFlags().String("log.level", "info", "one of debug, info, warn, error")
+	c.PersistentFlags().String("log.format", "json", "one of json or text")
+	c.PersistentFlags().Bool("log.source", false, "display the source file and line of the log call")
+	c.PersistentFlags().String("log.color", "auto", "colorized output: auto, always, never (only applies to text format)")
 }
 {{ if .gin }}
 // addServerFlags adds support to configure the server
@@ -18,7 +19,7 @@ func addServerFlags(c *cobra.Command) {
 	c.PersistentFlags().Int("server.port", 8080, "port on which the server should listen")
 	c.PersistentFlags().String("server.mode", "release", "server mode can be either 'debug', 'test' or 'release'")
 	c.PersistentFlags().Bool("server.instrument", true, "enable prometheus instrumentation")
-	c.PersistentFlags().Bool("server.unified-logger", true, "use zerolog to log requests instead of gin's default logger")
+	c.PersistentFlags().Bool("server.unified-logger", true, "use slog to log requests instead of gin's default logger")
 
 	// CORS related flags
 	c.PersistentFlags().Bool("server.cors.enabled", false, "enable CORS")

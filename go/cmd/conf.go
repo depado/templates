@@ -2,18 +2,21 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"strings"
+	"time"
 
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
+	"github.com/lmittmann/tint"
+	"github.com/mattn/go-isatty"
 	"github.com/spf13/viper"
 )
 
 type LogConf struct {
 	Level  string `mapstructure:"level"`
 	Format string `mapstructure:"format"`
-	Caller bool   `mapstructure:"caller"`
+	Source bool   `mapstructure:"source"`
+	Color  string `mapstructure:"color"`
 }
 {{ if .gin }}
 type ServerConf struct {
@@ -22,7 +25,6 @@ type ServerConf struct {
 	Mode          string `mapstructure:"mode"`
 	Instrument    bool   `mapstructure:"instrument"`
 	UnifiedLogger bool   `mapstructure:"unified-logger"`
-	LogRequests   bool   `mapstructure:"log-requests"`
 
 	Cors CorsConf `mapstructure:"cors"`
 }
@@ -43,47 +45,62 @@ type Conf struct {
 	{{- end }}
 }
 
-// NewLogger will return a new logger
-func NewLogger(c *Conf) *zerolog.Logger {
-	// Level parsing
-	warns := []string{}
-	lvl, err := zerolog.ParseLevel(c.Log.Level)
-	if err != nil {
-		warns = append(warns, fmt.Sprintf("unrecognized log level '%s', fallback to 'info'", c.Log.Level))
-		zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	} else {
-		zerolog.SetGlobalLevel(lvl)
-	}
-
-	// Type parsing
-	switch c.Log.Format {
-	case "console":
-		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-	case "json":
-		break
+// NewLogger will return a new logger based on configuration
+func NewLogger(c *Conf) *slog.Logger {
+	var level slog.Level
+	switch strings.ToLower(c.Log.Level) {
+	case "debug":
+		level = slog.LevelDebug
+	case "info":
+		level = slog.LevelInfo
+	case "warn", "warning":
+		level = slog.LevelWarn
+	case "error":
+		level = slog.LevelError
 	default:
-		warns = append(warns, fmt.Sprintf("unrecognized log format '%s', fallback to 'json'", c.Log.Format))
+		level = slog.LevelInfo
+		slog.Warn("unrecognized log level, fallback to info", "level", c.Log.Level)
 	}
 
-	// Caller
-	if c.Log.Caller {
-		log.Logger = log.With().Caller().Logger()
+	opts := &slog.HandlerOptions{
+		Level:     level,
+		AddSource: c.Log.Source,
 	}
 
-	// Log messages with the newly created logger
-	for _, w := range warns {
-		log.Warn().Msg(w)
+	var handler slog.Handler
+	switch strings.ToLower(c.Log.Format) {
+	case "json":
+		handler = slog.NewJSONHandler(os.Stderr, opts)
+	case "text", "console":
+		var noColor bool
+		switch strings.ToLower(c.Log.Color) {
+		case "always":
+			noColor = false
+		case "never":
+			noColor = true
+		default: // "auto" or empty
+			noColor = !isatty.IsTerminal(os.Stderr.Fd())
+		}
+		handler = tint.NewHandler(os.Stderr, &tint.Options{
+			Level:      level,
+			AddSource:  c.Log.Source,
+			TimeFormat: time.DateTime,
+			NoColor:    noColor,
+		})
+	default:
+		handler = slog.NewJSONHandler(os.Stderr, opts)
+		slog.Warn("unrecognized log format, fallback to json", "format", c.Log.Format)
 	}
 
-	return &log.Logger
+	return slog.New(handler)
 }
 
 // NewConf will parse and return the configuration
 func NewConf() (*Conf, error) {
 	// Environment variables
 	viper.AutomaticEnv()
-	viper.SetEnvPrefix("project-name")
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.SetEnvPrefix("{{ .name }}")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 
 	// Configuration file
 	if viper.GetString("conf") != "" {
@@ -94,7 +111,7 @@ func NewConf() (*Conf, error) {
 		viper.AddConfigPath("/config/")
 	}
 
-	viper.ReadInConfig() // nolint: errcheck
+	viper.ReadInConfig() //nolint:errcheck
 	conf := &Conf{}
 	if err := viper.Unmarshal(conf); err != nil {
 		return conf, fmt.Errorf("unable to unmarshal conf: %w", err)

@@ -4,16 +4,17 @@ if: gin
 package server
 
 import (
+	"log/slog"
+
 	"github.com/Depado/ginprom"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/rs/zerolog"
 
 	"{{ .gitserver }}/{{ .owner }}/{{ .name }}/cmd"
 )
 
 // setMode is used to set the proper gin mode.
-func setMode(mode string, l *zerolog.Logger) {
+func setMode(mode string, l *slog.Logger) {
 	switch mode {
 	case "debug":
 		gin.SetMode(gin.DebugMode)
@@ -22,13 +23,13 @@ func setMode(mode string, l *zerolog.Logger) {
 	case "release":
 		gin.SetMode(gin.ReleaseMode)
 	default:
-		l.Warn().Str("mode", mode).Msg("unknown gin mode, fallback to release")
+		l.Warn("unknown gin mode, fallback to release", "mode", mode)
 		gin.SetMode(gin.ReleaseMode)
 	}
 }
 
 // NewGinEngine will configure and return a new gin engine.
-func NewGinEngine(c *cmd.Conf, l *zerolog.Logger, cc *cors.Config) *gin.Engine {
+func NewGinEngine(c *cmd.Conf, l *slog.Logger, cc *cors.Config) *gin.Engine {
 	setMode(c.Server.Mode, l)
 	r := gin.New()
 
@@ -40,7 +41,7 @@ func NewGinEngine(c *cmd.Conf, l *zerolog.Logger, cc *cors.Config) *gin.Engine {
 
 	// Setup logging
 	if c.Server.UnifiedLogger {
-		r.Use(ZerologLogger(l))
+		r.Use(SlogLogger(l))
 	} else {
 		r.Use(gin.Logger())
 	}

@@ -1,7 +1,9 @@
 package cmd
 
 import (
-	"github.com/rs/zerolog/log"
+	"log/slog"
+	"os"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -16,7 +18,8 @@ func Setup(root *cobra.Command) {
 	{{- end }}
 
 	if err := viper.BindPFlags(root.PersistentFlags()); err != nil {
-		log.Fatal().Err(err).Msg("unable to bind flags")
+		slog.Error("unable to bind flags", "error", err)
+		os.Exit(1)
 	}
 
 	root.AddCommand(versionCmd)

@@ -1,7 +1,9 @@
 package main
 
 import (
-	"github.com/rs/zerolog/log"
+	"log/slog"
+	"os"
+
 	"github.com/spf13/cobra"
 
 	"{{ .gitserver }}/{{ .owner }}/{{ .name }}/cmd"
@@ -15,16 +17,19 @@ import (
 func run() {
 	conf, err := cmd.NewConf()
 	if err != nil {
-		log.Fatal().Err(err).Msg("unable to load configuration")
+		slog.Error("unable to load configuration", "error", err)
+		os.Exit(1)
 	}
 
 	lg := cmd.NewLogger(conf)
-	lg.Info().Str("version", cmd.Version).Str("build", cmd.Build).Str("date", cmd.BuildDate).Send()
+	slog.SetDefault(lg)
+	lg.Info("starting", "version", cmd.Version, "build", cmd.Build, "date", cmd.BuildDate)
 	{{- if .gin }}
 
 	cc, err := server.NewCors(conf, lg)
 	if err != nil {
-		lg.Fatal().Err(err).Msg("unable to setup cors")
+		lg.Error("unable to setup cors", "error", err)
+		os.Exit(1)
 	}
 	e := server.NewGinEngine(conf, lg, cc)
 	router.New(conf, lg, e).Listen()
@@ -45,6 +50,7 @@ func main() {
 
 	// Run the command
 	if err := root.Execute(); err != nil {
-		log.Fatal().Err(err).Msg("unable to start")
+		slog.Error("unable to start", "error", err)
+		os.Exit(1)
 	}
 }

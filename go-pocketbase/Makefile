@@ -6,9 +6,6 @@ export SUFFIX=$(shell git describe --exact-match > /dev/null 2>&1 || echo "-dev"
 export BUILD=$(shell git rev-parse HEAD 2> /dev/null || echo "undefined")
 export BUILDDATE=$(shell LANG=en_us_88591 date)
 BINARY={{ .name }}
-LDFLAGS=-ldflags "-X '{{ .gitserver }}/{{ .owner }}/{{ .name }}/cmd.Version=$(VERSION)$(SUFFIX)' \
-		-X '{{ .gitserver }}/{{ .owner }}/{{ .name }}/cmd.Build=$(BUILD)' \
-		-X '{{ .gitserver }}/{{ .owner }}/{{ .name }}/cmd.BuildDate=$(BUILDDATE)' -s -w"
 
 .PHONY: help
 help:
@@ -16,15 +13,16 @@ help:
 
 .PHONY: build
 build: ## Build
-	go build $(LDFLAGS) -o $(BINARY)
+	go build -o $(BINARY)
 
-.PHONY: install
-install:
-	go install $(LDFLAGS)
+.PHONY: dev
+dev: ## Run in development mode
+	go run . serve --dev
 
-.PHONY: tmp
-tmp: ## Build and output the binary in /tmp
-	go build $(LDFLAGS) -o /tmp/$(BINARY)
+.PHONY: serve
+serve: build ## Build and serve
+	./$(BINARY) serve
+
 {{ if .docker }}
 .PHONY: docker
 docker: ## Build the docker image
@@ -47,6 +45,6 @@ test: ## Run the test suite
 	CGO_ENABLED=1 go test -race -coverprofile="coverage.txt" ./...
 
 .PHONY: clean
-clean: ## Remove the binary
+clean: ## Remove the binary and data
 	if [ -f $(BINARY) ] ; then rm $(BINARY) ; fi
 	if [ -f coverage.txt ] ; then rm coverage.txt ; fi

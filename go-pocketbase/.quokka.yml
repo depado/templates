@@ -1,6 +1,6 @@
-name: "Go Project Template"
+name: "Go PocketBase Template"
 version: "0.1.0"
-description: "Generates a simple Go project"
+description: "Generates a Go project using PocketBase as the backend framework"
 delimiters: ["{{", "}}"]
 variables:
   name:
@@ -18,18 +18,12 @@ variables:
   description:
     prompt: "Project's description:"
     required: true
-    default: "Simple go project"
+    default: "PocketBase backend project"
   license:
     values: ["MIT", "Apache License 2.0", "GPL", "LGPL", "WTFPL", ""]
     default: "MIT"
     help: "License to be applied to the project. Select the last option if you don't want a license."
     prompt: "License"
-  gin:
-    confirm: true
-    prompt: "Add gin router?"
-  conf:
-    confirm: true
-    prompt: "Generate base config file?"
   docker:
     confirm: true
     prompt: "Add Dockerfile and dockerignore?"

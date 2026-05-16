@@ -15,12 +15,12 @@ var (
 
 // Descriptive help text for version command
 var versionHelp = `
-This command will output the build number, version number and build date of project-name.
+This command will output the build number, version number and build date of {{ .name }}.
 The build number corresponds to the sha1 commit the binary was built against,
 while the version number corresponds to the latest tag the binary was built on.
 Finally the build date corresponds to the date the binary was built.
 
-If both values are "unknown" make sure to build project-name with "make".
+If both values are "unknown" make sure to build {{ .name }} with "make".
 `
 
 // versionCmd is a command that will display the build number and version (if any)

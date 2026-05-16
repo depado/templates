@@ -1,0 +1,8 @@
+# Configuration file for {{ .name }}
+# Can be overridden with environment variables (uppercased, prefixed with project name)
+# Example: MYAPP_DEV=true
+
+# Enable development mode (automigrate, etc.)
+dev: false
+
+# Add your configuration here
