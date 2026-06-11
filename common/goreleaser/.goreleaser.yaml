@@ -1,5 +1,4 @@
 ---
-if: goreleaser
 delimiters: ['[[', ']]']
 ---
 version: 2
@@ -16,6 +15,11 @@ builds:
       - windows
       - darwin
     binary: [[ .name ]]
+    ldflags:
+      - -s -w
+      - -X "[[ .gitserver ]]/[[ .owner ]]/[[ .name ]]/cmd.Version={{ .Version }}"
+      - -X "[[ .gitserver ]]/[[ .owner ]]/[[ .name ]]/cmd.Build={{ .Commit }}"
+      - -X "[[ .gitserver ]]/[[ .owner ]]/[[ .name ]]/cmd.BuildDate={{ .Date }}"
 
 archives:
   - format: tar.gz

@@ -1,0 +1,17 @@
+name: "License"
+version: "0.1.0"
+description: "Adds a LICENSE file to the project"
+delimiters: ["{{", "}}"]
+variables:
+  license:
+    values: ["MIT", "Apache License 2.0", "GPL", "LGPL", "WTFPL"]
+    default: "MIT"
+    prompt: "License"
+  owner:
+    prompt: "Owner:"
+    help: "Organization or username"
+    required: true
+  year:
+    prompt: "Copyright year:"
+    default: "2026"
+    help: "Year for copyright notices in LICENSE"

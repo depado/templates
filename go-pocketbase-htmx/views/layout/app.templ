@@ -1,0 +1,135 @@
+package layout
+
+import (
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/avatar"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/button"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/dropdown"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/icon"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/sidebar"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/models"
+)
+
+type AppLayoutProps struct {
+	Title       string
+	CurrentPath string
+	User        *models.User
+}
+
+templ AppLayout(props AppLayoutProps) {
+	@Base(props.Title) {
+		@sidebar.Layout() {
+			@AppSidebar(props.CurrentPath, props.User)
+			@sidebar.Inset() {
+				<header class="flex h-14 items-center gap-2 border-b px-4">
+					@sidebar.Trigger()
+					<h1 class="text-lg font-semibold flex-1"><span id="page-heading">{ props.Title }</span></h1>
+					@button.Button(button.Props{
+						Variant: button.VariantGhost,
+						Size:    button.SizeIcon,
+						Attributes: templ.Attributes{
+							"onclick":    "toggleTheme()",
+							"aria-label": "Toggle theme",
+						},
+					}) {
+						<span class="hidden dark:inline">@icon.Sun(icon.Props{Class: "size-4"})</span>
+						<span class="inline dark:hidden">@icon.Moon(icon.Props{Class: "size-4"})</span>
+					}
+				</header>
+				<main id="main-content" class="flex-1 p-4 md:p-6" hx-history-elt>
+					{ children... }
+				</main>
+			}
+		}
+	}
+}
+
+templ AppSidebar(currentPath string, user *models.User) {
+	@sidebar.Sidebar(sidebar.Props{
+		Variant:     sidebar.VariantInset,
+		Collapsible: sidebar.CollapsibleIcon,
+	}) {
+		@sidebar.Header() {
+			<a href="/" class="flex items-center gap-2 px-2">
+				@icon.House(icon.Props{Class: "size-5"})
+				<span class="font-semibold text-lg group-data-[tui-sidebar-state=collapsed]:hidden">{{.name}}</span>
+			</a>
+		}
+		<div hx-boost="true" hx-target="#main-content" hx-push-url="true">
+		@sidebar.Content() {
+			@sidebar.Group() {
+				@sidebar.Menu() {
+					@sidebar.MenuItem() {
+						@sidebar.MenuButton(sidebar.MenuButtonProps{
+							Href:     "/",
+							IsActive: currentPath == "/",
+							Tooltip:  "Dashboard",
+						}) {
+							@icon.House(icon.Props{})
+							<span>Dashboard</span>
+						}
+					}
+				}
+			}
+		}
+		</div>
+		@sidebar.Footer() {
+			if user != nil {
+				@sidebar.Menu() {
+					@sidebar.MenuItem() {
+						@dropdown.Dropdown() {
+							@dropdown.Trigger() {
+								@sidebar.MenuButton(sidebar.MenuButtonProps{
+									Size: sidebar.MenuButtonSizeLg,
+								}) {
+									@avatar.Avatar(avatar.Props{Class: "size-8"}) {
+										if user.Avatar() != "" {
+											@avatar.Image(avatar.ImageProps{
+												Src: "/api/files/users/" + user.Id + "/" + user.Avatar(),
+												Alt: user.Name(),
+											})
+										}
+										@avatar.Fallback() {
+											{ user.Initials() }
+										}
+									}
+									<div class="flex flex-col flex-1 text-left">
+										<span class="text-sm font-medium">{ user.Name() }</span>
+										<span class="text-xs text-muted-foreground">{ user.Email() }</span>
+									</div>
+									@icon.ChevronsUpDown(icon.Props{Class: "ml-auto size-4"})
+								}
+							}
+							@dropdown.Content(dropdown.ContentProps{
+								Placement: dropdown.PlacementTopEnd,
+								Class:     "w-56",
+							}) {
+								@dropdown.Item(dropdown.ItemProps{
+									Href: "/settings",
+									Attributes: templ.Attributes{
+										"hx-get":      "/settings",
+										"hx-target":   "#main-content",
+										"hx-push-url": "true",
+									},
+								}) {
+									<span class="flex items-center">
+										@icon.Settings(icon.Props{Class: "size-4 mr-2"})
+										Settings
+									</span>
+								}
+								@dropdown.Separator()
+								@dropdown.Item(dropdown.ItemProps{
+									Href: "/logout",
+								}) {
+									<span class="flex items-center">
+										@icon.LogOut(icon.Props{Class: "size-4 mr-2"})
+										Sign out
+									</span>
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

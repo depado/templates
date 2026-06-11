@@ -1,0 +1,49 @@
+package pages
+
+import (
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/button"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/card"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/input"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/views/layout"
+)
+
+templ LoginPage(hasError bool) {
+	@layout.Base("Login") {
+		<div class="min-h-screen flex items-center justify-center p-4">
+			@card.Card(card.Props{Class: "w-full max-w-sm"}) {
+				@card.Header() {
+					@card.Title() { Sign In }
+					@card.Description() { Enter your credentials to continue }
+				}
+				@card.Content() {
+						<form id="login-form" method="POST" action="/login" class="space-y-4">
+						@input.Input(input.Props{
+							Type:        input.TypeEmail,
+							Name:        "email",
+							Placeholder: "you@example.com",
+							Required:    true,
+						})
+						@input.Input(input.Props{
+							Type:     input.TypePassword,
+							Name:     "password",
+							Placeholder: "Password",
+							Required: true,
+						})
+						if hasError {
+							<p class="text-sm text-destructive">Invalid email or password.</p>
+						}
+					</form>
+				}
+				@card.Footer() {
+					@button.Button(button.Props{
+						Type:      button.TypeSubmit,
+						Form:      "login-form",
+						FullWidth: true,
+					}) {
+						Sign In
+					}
+				}
+			}
+		</div>
+	}
+}

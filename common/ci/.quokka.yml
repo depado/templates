@@ -1,0 +1,4 @@
+name: "CI Workflow"
+version: "0.1.0"
+description: "Adds a GitHub Actions CI workflow using depado/github-actions"
+copy: true

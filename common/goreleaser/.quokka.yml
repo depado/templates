@@ -1,0 +1,14 @@
+name: "GoReleaser"
+version: "0.1.0"
+description: "Adds a GoReleaser config and GitHub Actions release workflow"
+variables:
+  name:
+    prompt: "Project name:"
+    required: true
+  owner:
+    prompt: "Owner:"
+    help: "Organization or username"
+    required: true
+  gitserver:
+    prompt: "Git Server:"
+    default: "github.com"

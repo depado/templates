@@ -1,0 +1,17 @@
+version: "3"
+
+tasks:
+  templ:
+    desc: Run templ with hot reload
+    cmds:
+      - templ generate --watch --proxy="http://localhost:8090" --cmd="go run ./main.go serve --dev" --open-browser=false
+
+  tailwind:
+    desc: Watch Tailwind CSS
+    cmds:
+      - tailwindcss -i ./assets/css/input.css -o ./assets/css/output.css --watch
+
+  dev:
+    desc: Start full development environment
+    cmds:
+      - task --parallel tailwind templ

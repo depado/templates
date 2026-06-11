@@ -1,0 +1,25 @@
+package pages
+
+import (
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/card"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/views/layout"
+)
+
+templ DashboardContent() {
+	<title id="page-title" hx-swap-oob="true">Dashboard - {{.name}}</title>
+	<span id="page-heading" hx-swap-oob="true">Dashboard</span>
+	<div class="grid gap-4">
+		@card.Card() {
+			@card.Header() {
+				@card.Title() { Welcome }
+				@card.Description() { You are logged in to {{.name}}. }
+			}
+		}
+	</div>
+}
+
+templ DashboardPage(props layout.AppLayoutProps) {
+	@layout.AppLayout(props) {
+		@DashboardContent()
+	}
+}

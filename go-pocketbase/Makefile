@@ -6,6 +6,9 @@ export SUFFIX=$(shell git describe --exact-match > /dev/null 2>&1 || echo "-dev"
 export BUILD=$(shell git rev-parse HEAD 2> /dev/null || echo "undefined")
 export BUILDDATE=$(shell LANG=en_us_88591 date)
 BINARY={{ .name }}
+LDFLAGS=-ldflags "-X '{{ .gitserver }}/{{ .owner }}/{{ .name }}/cmd.Version=$(VERSION)$(SUFFIX)' \
+		-X '{{ .gitserver }}/{{ .owner }}/{{ .name }}/cmd.Build=$(BUILD)' \
+		-X '{{ .gitserver }}/{{ .owner }}/{{ .name }}/cmd.BuildDate=$(BUILDDATE)' -s -w"
 
 .PHONY: help
 help:
@@ -13,7 +16,7 @@ help:
 
 .PHONY: build
 build: ## Build
-	go build -o $(BINARY)
+	go build $(LDFLAGS) -o $(BINARY)
 
 .PHONY: dev
 dev: ## Run in development mode
@@ -22,12 +25,14 @@ dev: ## Run in development mode
 .PHONY: serve
 serve: build ## Build and serve
 	./$(BINARY) serve
+{{- if .docker }}
 
-{{ if .docker }}
 .PHONY: docker
 docker: ## Build the docker image
 	docker build -t $(BINARY):latest $(if $(filter undefined,$(BUILD)),,-t $(BINARY):$(BUILD) )-f Dockerfile .
-{{ end }}{{ if .goreleaser }}
+{{- end }}
+{{- if .goreleaser }}
+
 .PHONY: release
 release: ## Create a new release on Github
 	goreleaser release
@@ -35,7 +40,8 @@ release: ## Create a new release on Github
 .PHONY: snapshot
 snapshot: ## Create a new snapshot release
 	goreleaser release --snapshot --clean
-{{ end }}
+{{- end }}
+
 .PHONY: lint
 lint: ## Runs the linter
 	golangci-lint run

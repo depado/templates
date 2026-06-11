@@ -1,0 +1,7 @@
+# Configuration file for {{.name}}
+# Can be overridden with environment variables (uppercased, prefixed with project name)
+
+# Enable development mode (automigrate, etc.)
+dev: false
+
+# Add your configuration here

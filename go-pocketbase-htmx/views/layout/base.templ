@@ -1,0 +1,73 @@
+package layout
+
+import (
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/avatar"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/dropdown"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/input"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/sidebar"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/toast"
+)
+
+templ Base(title string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<meta name="theme-color" content="#09090b"/>
+			<meta name="htmx-config" content='{"historyRestoreAsHxRequest":false,"globalViewTransitions":false}'/>
+			<script>
+				if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+					document.documentElement.classList.add('dark');
+				} else {
+					document.documentElement.classList.remove('dark');
+				}
+			</script>
+			<script src="/assets/js/htmx.min.js"></script>
+			<link rel="stylesheet" href="/assets/css/output.css"/>
+			<title id="page-title">{ title } - {{.name}}</title>
+		</head>
+		<body class="min-h-screen bg-background font-sans antialiased">
+			{ children... }
+			<div id="toast-container"></div>
+			@sidebar.Script()
+			@toast.Script()
+			@input.Script()
+			@avatar.Script()
+			@dropdown.Script()
+			<script>
+				document.addEventListener('htmx:afterSettle', function() {
+					var path = window.location.pathname;
+					document.querySelectorAll('[data-tui-sidebar="menu-button"]').forEach(function(el) {
+						if (el.getAttribute('href') === path) {
+							el.setAttribute('data-tui-sidebar-active', 'true');
+						} else {
+							el.removeAttribute('data-tui-sidebar-active');
+						}
+					});
+				});
+				window.addEventListener('popstate', function() {
+					setTimeout(function() {
+						var path = window.location.pathname;
+						document.querySelectorAll('[data-tui-sidebar="menu-button"]').forEach(function(el) {
+							if (el.getAttribute('href') === path) {
+								el.setAttribute('data-tui-sidebar-active', 'true');
+							} else {
+								el.removeAttribute('data-tui-sidebar-active');
+							}
+						});
+					}, 10);
+				});
+				function toggleTheme() {
+					if (document.documentElement.classList.contains('dark')) {
+						document.documentElement.classList.remove('dark');
+						localStorage.theme = 'light';
+					} else {
+						document.documentElement.classList.add('dark');
+						localStorage.theme = 'dark';
+					}
+				}
+			</script>
+		</body>
+	</html>
+}

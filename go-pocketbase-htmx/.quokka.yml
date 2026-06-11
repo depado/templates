@@ -1,6 +1,6 @@
-name: "Go Project Template"
+name: "Go PocketBase + TemplUI + HTMX Template"
 version: "0.1.0"
-description: "Generates a simple Go project"
+description: "Generates a Go project using PocketBase as the backend framework, TemplUI for UI components, and HTMX for SPA navigation"
 delimiters: ["{{", "}}"]
 variables:
   name:
@@ -18,13 +18,7 @@ variables:
   description:
     prompt: "Project's description:"
     required: true
-    default: "Simple go project"
-  gin:
-    confirm: true
-    prompt: "Add gin router?"
-  conf:
-    confirm: true
-    prompt: "Generate base config file?"
+    default: "PocketBase + TemplUI + HTMX project"
   docker:
     confirm: true
     prompt: "Add Dockerfile and dockerignore?"

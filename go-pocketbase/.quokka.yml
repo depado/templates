@@ -19,24 +19,22 @@ variables:
     prompt: "Project's description:"
     required: true
     default: "PocketBase backend project"
-  license:
-    values: ["MIT", "Apache License 2.0", "GPL", "LGPL", "WTFPL", ""]
-    default: "MIT"
-    help: "License to be applied to the project. Select the last option if you don't want a license."
-    prompt: "License"
   docker:
     confirm: true
     prompt: "Add Dockerfile and dockerignore?"
-  renovate:
-    confirm: true
-    prompt: "Add renovate config?"
-  ci:
-    confirm: true
-    prompt: "Add CI config?"
   goreleaser:
     confirm: true
     prompt: "Enable goreleaser?"
-  year:
-    prompt: "Copyright year:"
-    default: "2026"
-    help: "Year for copyright notices in LICENSE"
+
+includes:
+  - source: ../common/license
+    confirm: true
+    prompt: "Add a LICENSE file?"
+  - source: ../common/ci
+    confirm: true
+    prompt: "Add CI workflow?"
+  - source: ../common/renovate
+    confirm: true
+    prompt: "Add Renovate config?"
+  - source: ../common/goreleaser
+    if: goreleaser

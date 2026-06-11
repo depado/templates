@@ -1,0 +1,4 @@
+name: "Renovate Config"
+version: "0.1.0"
+description: "Adds a Renovate dependency update configuration"
+copy: true

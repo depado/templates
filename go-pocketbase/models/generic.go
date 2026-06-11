@@ -5,13 +5,8 @@ import (
 )
 
 // FindById finds a single record by its ID.
-func FindById[T core.Model](app core.App, id string) (T, error) {
-	var result T
-	result, err := app.FindRecordById(result.TableName(), id)
-	if err != nil {
-		return result, err
-	}
-	return result, nil
+func FindById(app core.App, collection string, id string) (*core.Record, error) {
+	return app.FindRecordById(collection, id)
 }
 
 // FindAllByField finds all records matching a field value.

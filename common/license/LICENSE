@@ -1,6 +1,3 @@
----
-if: license
----
 {{ if eq .license "MIT" -}}
 MIT License
 

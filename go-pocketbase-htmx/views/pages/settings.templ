@@ -1,0 +1,99 @@
+package pages
+
+import (
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/avatar"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/button"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/card"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/form"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/input"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/models"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/views/layout"
+)
+
+type SettingsData struct {
+	User    *models.User
+	Error   string
+	Success string
+}
+
+templ SettingsContent(data SettingsData) {
+	<title id="page-title" hx-swap-oob="true">Settings - {{.name}}</title>
+	<span id="page-heading" hx-swap-oob="true">Settings</span>
+	<div class="grid gap-4 max-w-2xl">
+		@card.Card() {
+			@card.Header() {
+				@card.Title() { Profile }
+			}
+			@card.Content() {
+				<div class="flex items-center gap-4">
+					@avatar.Avatar(avatar.Props{Class: "size-16"}) {
+						if data.User.Avatar() != "" {
+							@avatar.Image(avatar.ImageProps{
+								Src: "/api/files/users/" + data.User.Id + "/" + data.User.Avatar(),
+								Alt: data.User.Name(),
+							})
+						}
+						@avatar.Fallback() {
+							<span class="text-xl">{ data.User.Initials() }</span>
+						}
+					}
+					<div>
+						<p class="font-medium">{ data.User.Name() }</p>
+						<p class="text-sm text-muted-foreground">{ data.User.Email() }</p>
+					</div>
+				</div>
+			}
+		}
+		@card.Card() {
+			@card.Header() {
+				@card.Title() { Change Password }
+			}
+			@card.Content() {
+				if data.Error != "" {
+					@form.Message(form.MessageProps{Variant: form.MessageVariantError}) {
+						{ data.Error }
+					}
+				}
+				if data.Success != "" {
+					@form.Message(form.MessageProps{Variant: form.MessageVariantInfo}) {
+						{ data.Success }
+					}
+				}
+				<form
+					hx-post="/settings/password"
+					hx-target="this"
+					hx-swap="outerHTML"
+					class="space-y-4"
+				>
+					@input.Input(input.Props{
+						Type:        input.TypePassword,
+						Name:        "current_password",
+						Placeholder: "Current password",
+						Required:    true,
+					})
+					@input.Input(input.Props{
+						Type:        input.TypePassword,
+						Name:        "new_password",
+						Placeholder: "New password (min 8 characters)",
+						Required:    true,
+					})
+					@input.Input(input.Props{
+						Type:        input.TypePassword,
+						Name:        "confirm_password",
+						Placeholder: "Confirm new password",
+						Required:    true,
+					})
+					@button.Button(button.Props{Type: button.TypeSubmit}) {
+						Update Password
+					}
+				</form>
+			}
+		}
+	</div>
+}
+
+templ SettingsPage(props layout.AppLayoutProps, data SettingsData) {
+	@layout.AppLayout(props) {
+		@SettingsContent(data)
+	}
+}

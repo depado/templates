@@ -7,14 +7,13 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 
-	"{{ .gitserver }}/{{ .owner }}/{{ .name }}/cmd"
-	"{{ .gitserver }}/{{ .owner }}/{{ .name }}/router"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/cmd"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/router"
 
-	_ "{{ .gitserver }}/{{ .owner }}/{{ .name }}/migrations"
+	_ "{{.gitserver}}/{{.owner}}/{{.name}}/migrations"
 )
 
 func main() {
-	// Load configuration
 	c, err := cmd.NewConf()
 	if err != nil {
 		log.Fatal(err)
@@ -23,12 +22,10 @@ func main() {
 	app := pocketbase.New()
 	app.RootCmd.AddCommand(cmd.VersionCmd)
 
-	// Register migrate command with automigrate in dev mode
 	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{
 		Automigrate: c.Dev,
 	})
 
-	// Setup routes and hooks before serving
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		return router.Setup(se)
 	})
