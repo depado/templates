@@ -7,10 +7,12 @@ variables:
     prompt: "Name:"
     help: "Project's name"
     required: true
+    default: "$output"
   owner:
     prompt: "Owner:"
     help: "Organization or username"
     required: true
+    default: "$username"
   gitserver:
     prompt: "Git Server:"
     default: "github.com"

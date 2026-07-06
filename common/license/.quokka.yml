@@ -11,7 +11,4 @@ variables:
     prompt: "Owner:"
     help: "Organization or username"
     required: true
-  year:
-    prompt: "Copyright year:"
-    default: "2026"
-    help: "Year for copyright notices in LICENSE"
+    default: "$username"

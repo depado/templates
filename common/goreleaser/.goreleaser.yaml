@@ -26,6 +26,18 @@ builds:
     goarch:
       - amd64
       - arm64
+      - arm
+      - "386"
+    goarm:
+      - "6"
+      - "7"
+    ignore:
+      - goos: darwin
+        goarch: "386"
+      - goos: darwin
+        goarch: arm
+      - goos: windows
+        goarch: arm
     flags:
       - -trimpath
     ldflags:
@@ -36,14 +48,14 @@ builds:
 
 archives:
   - id: << .name >>
-    builds: ["<< .name >>"]
+    ids: ["<< .name >>"]
     formats: ["tar.gz"]
     format_overrides:
       - goos: windows
         formats: ["zip"]
     name_template: >-
       {{ .ProjectName }}_
-      {{- title .Os }}_
+      {{- .Os }}_
       {{- if eq .Arch "amd64" }}x86_64
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
@@ -56,10 +68,12 @@ source:
 checksum:
   name_template: 'checksums.txt'
 
+<< if .sbom >>
 sboms:
   - artifacts: archive
   - id: source
     artifacts: source
+<< end >>
 
 snapshot:
   version_template: "{{ incpatch .Version }}-next"

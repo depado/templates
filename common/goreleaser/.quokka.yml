@@ -5,10 +5,15 @@ variables:
   name:
     prompt: "Project name:"
     required: true
+    default: "$output"
   owner:
     prompt: "Owner:"
     help: "Organization or username"
     required: true
+    default: "$username"
   gitserver:
     prompt: "Git Server:"
     default: "github.com"
+  sbom:
+    confirm: true
+    prompt: "Generate SBOM artifacts?"
