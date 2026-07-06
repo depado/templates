@@ -70,9 +70,7 @@ checksum:
 
 << if .sbom >>
 sboms:
-  - artifacts: archive
-  - id: source
-    artifacts: source
+  - artifacts: source
 << end >>
 
 snapshot:
