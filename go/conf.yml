@@ -16,7 +16,7 @@ server:
   host: "127.0.0.1"    # host on which the server should listen
   port: 8080           # port on which the server should listen
   mode: release        # server mode can be either 'debug', 'test' or 'release'
-  instrument: true     # enable prometheus instrumentation
+  {{ if .gin_otel }}instrument: true     # enable instrumentation (OpenTelemetry traces and metrics via OTLP){{ end }}
   unified-logger: true # use slog to log requests instead of gin's default logger
   cors:
     enabled: false # enable CORS

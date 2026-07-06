@@ -6,7 +6,6 @@ package server
 import (
 	"log/slog"
 
-	"github.com/Depado/ginprom"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
@@ -29,15 +28,17 @@ func setMode(mode string, l *slog.Logger) {
 }
 
 // NewGinEngine will configure and return a new gin engine.
-func NewGinEngine(c *cmd.Conf, l *slog.Logger, cc *cors.Config) *gin.Engine {
+func NewGinEngine(c *cmd.Conf, l *slog.Logger, cc *cors.Config, tel *Telemetry) *gin.Engine {
 	setMode(c.Server.Mode, l)
 	r := gin.New()
-
-	// Setup instrumentation if configured
-	if c.Server.Instrument {
-		p := ginprom.New(ginprom.Engine(r))
-		r.Use(p.Instrument())
+	{{ if .gin_otel }}
+	// OpenTelemetry instrumentation (traces + metrics via OTLP)
+	if c.Server.Instrument && tel != nil {
+		if mw := tel.GinMiddleware(); mw != nil {
+			r.Use(mw)
+		}
 	}
+	{{ end }}
 
 	// Setup logging
 	if c.Server.UnifiedLogger {

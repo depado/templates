@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -11,24 +12,33 @@ type Conf struct {
 	Dev bool `mapstructure:"dev"`
 }
 
+// NewConf will parse and return the configuration.
+// The config file path can be set via the APPNAME_CONF environment variable.
 func NewConf() (*Conf, error) {
-	viper.AutomaticEnv()
-	viper.SetEnvPrefix("{{.name}}")
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
+	v := viper.New()
 
-	if viper.GetString("conf") != "" {
-		viper.SetConfigFile(viper.GetString("conf"))
+	v.AutomaticEnv()
+	v.SetEnvPrefix("{{.name}}")
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
+
+	if v.GetString("conf") != "" {
+		v.SetConfigFile(v.GetString("conf"))
 	} else {
-		viper.SetConfigName("conf")
-		viper.AddConfigPath(".")
-		viper.AddConfigPath("/config/")
+		v.SetConfigName("conf")
+		v.AddConfigPath(".")
+		v.AddConfigPath("/config/")
 	}
 
-	viper.ReadInConfig() //nolint:errcheck
+	if err := v.ReadInConfig(); err != nil {
+		var notFound viper.ConfigFileNotFoundError
+		if !errors.As(err, &notFound) {
+			return nil, fmt.Errorf("error reading config file: %w", err)
+		}
+	}
 
 	conf := &Conf{}
-	if err := viper.Unmarshal(conf); err != nil {
-		return conf, fmt.Errorf("unable to unmarshal conf: %w", err)
+	if err := v.Unmarshal(conf); err != nil {
+		return nil, fmt.Errorf("unable to unmarshal conf: %w", err)
 	}
 
 	return conf, nil

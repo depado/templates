@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/lmittmann/tint"
 	"github.com/mattn/go-isatty"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -23,7 +25,7 @@ type ServerConf struct {
 	Host          string `mapstructure:"host"`
 	Port          int    `mapstructure:"port"`
 	Mode          string `mapstructure:"mode"`
-	Instrument    bool   `mapstructure:"instrument"`
+	{{ if .gin_otel }}Instrument    bool   `mapstructure:"instrument"`{{ end }}
 	UnifiedLogger bool   `mapstructure:"unified-logger"`
 
 	Cors CorsConf `mapstructure:"cors"`
@@ -95,26 +97,40 @@ func NewLogger(c *Conf) *slog.Logger {
 	return slog.New(handler)
 }
 
-// NewConf will parse and return the configuration
-func NewConf() (*Conf, error) {
-	// Environment variables
-	viper.AutomaticEnv()
-	viper.SetEnvPrefix("{{ .name }}")
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
+// NewConf will parse and return the configuration. It binds cobra flags to
+// viper to ensure the correct precedence order: CLI flags > env vars > config
+// file > defaults.
+func NewConf(cmd *cobra.Command) (*Conf, error) {
+	v := viper.New()
 
-	// Configuration file
-	if viper.GetString("conf") != "" {
-		viper.SetConfigFile(viper.GetString("conf"))
-	} else {
-		viper.SetConfigName("conf")
-		viper.AddConfigPath(".")
-		viper.AddConfigPath("/config/")
+	if err := v.BindPFlags(cmd.PersistentFlags()); err != nil {
+		return nil, fmt.Errorf("unable to bind flags: %w", err)
 	}
 
-	viper.ReadInConfig() //nolint:errcheck
+	// Environment variables
+	v.AutomaticEnv()
+	v.SetEnvPrefix("{{ .name }}")
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
+
+	// Configuration file
+	if v.GetString("conf") != "" {
+		v.SetConfigFile(v.GetString("conf"))
+	} else {
+		v.SetConfigName("conf")
+		v.AddConfigPath(".")
+		v.AddConfigPath("/config/")
+	}
+
+	if err := v.ReadInConfig(); err != nil {
+		var notFound viper.ConfigFileNotFoundError
+		if !errors.As(err, &notFound) {
+			return nil, fmt.Errorf("error reading config file: %w", err)
+		}
+	}
+
 	conf := &Conf{}
-	if err := viper.Unmarshal(conf); err != nil {
-		return conf, fmt.Errorf("unable to unmarshal conf: %w", err)
+	if err := v.Unmarshal(conf); err != nil {
+		return nil, fmt.Errorf("unable to unmarshal conf: %w", err)
 	}
 
 	return conf, nil

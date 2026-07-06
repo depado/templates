@@ -18,7 +18,7 @@ func addServerFlags(c *cobra.Command) {
 	c.PersistentFlags().String("server.host", "127.0.0.1", "host on which the server should listen")
 	c.PersistentFlags().Int("server.port", 8080, "port on which the server should listen")
 	c.PersistentFlags().String("server.mode", "release", "server mode can be either 'debug', 'test' or 'release'")
-	c.PersistentFlags().Bool("server.instrument", true, "enable prometheus instrumentation")
+	{{ if .gin_otel }}c.PersistentFlags().Bool("server.instrument", true, "enable instrumentation (OpenTelemetry traces and metrics via OTLP)"){{ end }}
 	c.PersistentFlags().Bool("server.unified-logger", true, "use slog to log requests instead of gin's default logger")
 
 	// CORS related flags

@@ -1,0 +1,21 @@
+---
+if: gin_otel
+---
+# Local OpenTelemetry viewer for development.
+# Receives OTLP from the app on :4317 and shows traces, metrics, and logs
+# in a web UI at http://localhost:8000.
+#
+# This is a single-binary all-in-one — no collector config needed.
+#
+# Start:  make otel-up
+# Stop:   make otel-down
+# UI:     http://localhost:8000
+
+services:
+  otel-desktop-viewer:
+    image: ghcr.io/ctrlspice/otel-desktop-viewer:latest
+    container_name: otel-desktop-viewer
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+      - "8000:8000"   # Web UI

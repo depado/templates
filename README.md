@@ -21,12 +21,20 @@ This template generates a base Go application.
     - [Cobra](https://github.com/spf13/cobra) and [Viper](https://github.com/spf13/viper)
       for CLI and configuration
     - Configuration file, flags and environment variables support
+    - Correct precedence order: CLI flags > env vars > config file > defaults
     - `version` command to display injected variables at build time
-- Configurable [zerolog](https://github.com/rs/zerolog) logger (format, level, caller)
+- Structured logging with `log/slog` (configurable format, level, caller, color via [tint](https://github.com/lmittmann/tint))
 - Inject version information (commit hash, latest tag, build date) with Makefile
 - License selector
 - Optional [renovate](https://github.com/renovatebot/renovate) configuration
 - Optional example configuration file with default values for the app
+- Optional OpenTelemetry instrumentation
+    - Traces, metrics, and logs via OTLP (gRPC)
+    - [otelgin](https://github.com/open-telemetry/opentelemetry-go-contrib) HTTP server middleware
+    - Go runtime metrics (goroutines, memory, GC)
+    - `slog` → OTLP log bridge for unified logging
+    - Local development with [otel-desktop-viewer](https://github.com/CtrlSpice/otel-desktop-viewer) (Docker, single binary)
+    - Graceful degradation when collector is unreachable
 - Optional docker support
     - Dockerfile with multi-step build with [distroless](https://github.com/GoogleContainerTools/distroless)
       container image for small and secure images
@@ -34,12 +42,10 @@ This template generates a base Go application.
     - Adds Makefile rules (tag with `latest` and commit hash)
 - Optional CI support
     - GitHub Actions: Build, test and run [golangci-lint](https://github.com/golangci/golangci-lint)
-    - Drone: Build, test and run [golangci-lint](https://github.com/golangci/golangci-lint)
 - Optional Gin integration:
     - Adds the proper configuration structs and flags
     - Graceful shutdown support
     - CORS customization and support
-    - Prometheus instrumentation using [ginprom](https://github.com/Depado/ginprom)
     - Optional unified logger instead of gin's default one
 - Optional [goreleaser](https://goreleaser.com/) config
 
@@ -59,8 +65,8 @@ $ qk https://github.com/Depado/templates.git -p go-pocketbase myproject
 This template generates a Go project using [PocketBase](https://pocketbase.io/) as the backend framework.
 
 - [PocketBase](https://pocketbase.io/) integration with built-in admin UI, database, authentication, and file storage
-- Cobra CLI with `version` command and PocketBase's built-in `serve` command
-- Viper-based configuration (dev mode toggle, env var prefix)
+- Cobra CLI with `version` command integrated into PocketBase's root command
+- Viper-based configuration (dev mode toggle, env var prefix, `--conf` flag for custom config path)
 - API routes: health check, hello endpoint, protected route with `RequireAuth`
 - Logger and recover middlewares
 - Migrations support via PocketBase `migratecmd` plugin (auto-migration in dev mode)
@@ -103,7 +109,7 @@ This template generates a full-stack Go web application using PocketBase, [Templ
 - Asset embedding with Go's `embed` package
 - User model with avatar (initials fallback) and password change support
 - Cobra CLI with `version` command integrated into PocketBase's root command
-- Viper-based configuration (dev mode toggle, env var prefix)
+- Viper-based configuration (dev mode toggle, env var prefix, `--conf` flag for custom config path)
 - Inject version information (commit hash, latest tag, build date) with Makefile
 - License selector
 - Optional [renovate](https://github.com/renovatebot/renovate) configuration
@@ -149,6 +155,7 @@ Adds a [Renovate](https://github.com/renovatebot/renovate) dependency update con
 
 Adds a [GoReleaser](https://goreleaser.com/) configuration and GitHub Actions release workflow.
 
-- Builds for linux, windows, and darwin (amd64 + arm64)
-- Generates tar.gz/zip archives, checksums, and changelogs
+- Builds for linux, darwin, and windows (amd64 + arm64)
+- Generates tar.gz/zip archives, checksums, SBOMs, and grouped changelogs
+- Reproducible builds with `-trimpath` and commit timestamps
 - Release workflow triggers on git tags via [depado/github-actions](https://github.com/Depado/github-actions)

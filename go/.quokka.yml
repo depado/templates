@@ -22,6 +22,10 @@ variables:
   gin:
     confirm: true
     prompt: "Add gin router?"
+    variables:
+      otel:
+        confirm: true
+        prompt: "Add OpenTelemetry instrumentation? (traces + metrics + logs via OTLP)"
   conf:
     confirm: true
     prompt: "Generate base config file?"

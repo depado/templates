@@ -1,15 +1,11 @@
 package cmd
 
 import (
-	"log/slog"
-	"os"
-
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-// Setup takes the root command, binds the flags to it and adds the other
-// commands.
+// Setup takes the root command, adds persistent flags and subcommands.
+// Flag binding to viper is handled in NewConf to keep a local viper instance.
 func Setup(root *cobra.Command) {
 	addConfigurationFlag(root)
 	addLoggerFlags(root)
@@ -17,11 +13,5 @@ func Setup(root *cobra.Command) {
 	addServerFlags(root)
 	{{- end }}
 
-	if err := viper.BindPFlags(root.PersistentFlags()); err != nil {
-		slog.Error("unable to bind flags", "error", err)
-		os.Exit(1)
-	}
-
 	root.AddCommand(versionCmd)
-
 }

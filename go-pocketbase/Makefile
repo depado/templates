@@ -4,7 +4,7 @@ export CGO_ENABLED=0
 export VERSION=$(shell git describe --abbrev=0 --tags 2> /dev/null || echo "0.1.0")
 export SUFFIX=$(shell git describe --exact-match > /dev/null 2>&1 || echo "-dev")
 export BUILD=$(shell git rev-parse HEAD 2> /dev/null || echo "undefined")
-export BUILDDATE=$(shell LANG=en_us_88591 date)
+export BUILDDATE=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
 BINARY={{ .name }}
 LDFLAGS=-ldflags "-X '{{ .gitserver }}/{{ .owner }}/{{ .name }}/cmd.Version=$(VERSION)$(SUFFIX)' \
 		-X '{{ .gitserver }}/{{ .owner }}/{{ .name }}/cmd.Build=$(BUILD)' \

@@ -12,7 +12,7 @@
 
 ## Prerequisites
 
-- **Go 1.23+** — [download](https://go.dev/dl/)
+- **Go 1.26+** — [download](https://go.dev/dl/)
 - **templ** — `go install github.com/a-h/templ/cmd/templ@latest`
 - **Tailwind CSS v4 standalone CLI** — [download](https://github.com/tailwindlabs/tailwindcss/releases/latest), place `tailwindcss` in your `$PATH`
 - **Task** — `go install github.com/go-task/task/v3/cmd/task@latest`
@@ -27,7 +27,14 @@ make bootstrap   # Install TemplUI components, download HTMX, tidy deps
 ## Development
 
 ```bash
-task dev
+task dev           # templ + tailwind hot reload, runs go run . serve --dev
+```
+
+Or with Makefile:
+
+```bash
+make run           # build assets and run in dev mode
+make dev           # shortcut alias for make run
 ```
 
 ## Building
@@ -40,6 +47,35 @@ make build
 
 ```bash
 cp conf.example.yml conf.yml
+```
+
+Configuration can be set via (in precedence order):
+- CLI flags (`--conf path/to/config.yml`)
+- Environment variables (uppercased, prefixed with project name, e.g. `MYAPP_DEV=true`)
+- Configuration file (`conf.yml` or via `MYAPP_CONF` env var)
+
+## Makefile Targets
+
+```
+make help       # list all targets
+make bootstrap  # install TemplUI components + download HTMX + tidy deps
+make build      # compile the binary
+make run        # build assets and run in dev mode
+make test       # run the test suite
+make lint       # run golangci-lint
+{{ if .docker }}make docker    # build Docker image
+{{ end }}{{ if .goreleaser }}make release   # create a GitHub release via goreleaser
+{{ end }}make clean      # remove binary and data
+```
+
+## Build Information
+
+```bash
+make build
+./{{.name}} version
+# Build: 9a3b2c1
+# Version: 0.1.0-dev
+# Build Date: 2026-07-05T15:53:41Z
 ```
 
 ## Getting Started
@@ -67,7 +103,8 @@ cp conf.example.yml conf.yml
 │   └── css/
 │       └── input.css      # Tailwind CSS v4 entry point
 ├── cmd/
-│   └── conf.go            # Viper-based configuration
+│   ├── conf.go            # Viper-based configuration
+│   └── version.go         # Version command
 ├── components/            # TemplUI components (installed via CLI)
 ├── models/
 │   └── user.go            # User model
@@ -78,8 +115,6 @@ cp conf.example.yml conf.yml
 │   ├── pages.go           # Dashboard and settings handlers
 │   ├── render.go          # Render helper
 │   └── router.go          # Route registration
-├── utils/
-│   └── templui.go         # TemplUI utilities
 ├── views/
 │   ├── layout/
 │   │   ├── base.templ     # HTML shell

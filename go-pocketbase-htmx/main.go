@@ -14,13 +14,17 @@ import (
 )
 
 func main() {
+	app := pocketbase.New()
+
+	// Register custom commands and flags
+	app.RootCmd.AddCommand(cmd.VersionCmd)
+	app.RootCmd.PersistentFlags().StringP("conf", "c", "", "path to configuration file (also settable via {{.name | upper}}_CONF env var)")
+
+	// Load configuration
 	c, err := cmd.NewConf()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	app := pocketbase.New()
-	app.RootCmd.AddCommand(cmd.VersionCmd)
 
 	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{
 		Automigrate: c.Dev,

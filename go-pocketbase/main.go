@@ -14,14 +14,16 @@ import (
 )
 
 func main() {
+	app := pocketbase.New()
+
+	// Register custom commands
+	app.RootCmd.AddCommand(cmd.VersionCmd)
+
 	// Load configuration
 	c, err := cmd.NewConf()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	app := pocketbase.New()
-	app.RootCmd.AddCommand(cmd.VersionCmd)
 
 	// Register migrate command with automigrate in dev mode
 	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{
