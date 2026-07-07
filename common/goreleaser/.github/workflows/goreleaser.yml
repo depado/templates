@@ -11,8 +11,4 @@ permissions:
 
 jobs:
   goreleaser:
-{{- if .sbom }}
-    uses: depado/github-actions/.github/workflows/goreleaser-sbom.yml@main
-{{- else }}
     uses: depado/github-actions/.github/workflows/goreleaser.yml@main
-{{- end }}
