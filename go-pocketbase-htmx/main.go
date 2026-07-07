@@ -18,7 +18,7 @@ func main() {
 
 	// Register custom commands and flags
 	app.RootCmd.AddCommand(cmd.VersionCmd)
-	app.RootCmd.PersistentFlags().StringP("conf", "c", "", "path to configuration file (also settable via {{.name | upper}}_CONF env var)")
+	app.RootCmd.PersistentFlags().StringP("conf", "c", "", "path to configuration file (also settable via {{.name | uc}}_CONF env var)")
 
 	// Load configuration
 	c, err := cmd.NewConf()

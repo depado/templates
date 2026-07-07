@@ -7,7 +7,7 @@ import (
 // addLoggerFlags adds support to configure the level of the logger.
 func addLoggerFlags(c *cobra.Command) {
 	c.PersistentFlags().String("log.level", "info", "one of debug, info, warn, error")
-	c.PersistentFlags().String("log.format", "json", "one of json or text")
+	c.PersistentFlags().String("log.format", "auto", "one of auto, json, text")
 	c.PersistentFlags().Bool("log.source", false, "display the source file and line of the log call")
 	c.PersistentFlags().String("log.color", "auto", "colorized output: auto, always, never (only applies to text format)")
 }

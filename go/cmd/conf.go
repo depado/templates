@@ -74,27 +74,37 @@ func NewLogger(c *Conf) *slog.Logger {
 	case "json":
 		handler = slog.NewJSONHandler(os.Stderr, opts)
 	case "text", "console":
-		var noColor bool
-		switch strings.ToLower(c.Log.Color) {
-		case "always":
-			noColor = false
-		case "never":
-			noColor = true
-		default: // "auto" or empty
-			noColor = !isatty.IsTerminal(os.Stderr.Fd())
+		handler = tintHandler(level, c)
+	case "auto", "":
+		if isatty.IsTerminal(os.Stderr.Fd()) {
+			handler = tintHandler(level, c)
+		} else {
+			handler = slog.NewJSONHandler(os.Stderr, opts)
 		}
-		handler = tint.NewHandler(os.Stderr, &tint.Options{
-			Level:      level,
-			AddSource:  c.Log.Source,
-			TimeFormat: time.DateTime,
-			NoColor:    noColor,
-		})
 	default:
 		handler = slog.NewJSONHandler(os.Stderr, opts)
 		slog.Warn("unrecognized log format, fallback to json", "format", c.Log.Format)
 	}
 
 	return slog.New(handler)
+}
+
+func tintHandler(level slog.Level, c *Conf) slog.Handler {
+	var noColor bool
+	switch strings.ToLower(c.Log.Color) {
+	case "always":
+		noColor = false
+	case "never":
+		noColor = true
+	default: // "auto" or empty
+		noColor = !isatty.IsTerminal(os.Stderr.Fd())
+	}
+	return tint.NewHandler(os.Stderr, &tint.Options{
+		Level:      level,
+		AddSource:  c.Log.Source,
+		TimeFormat: time.DateTime,
+		NoColor:    noColor,
+	})
 }
 
 // NewConf will parse and return the configuration. It binds cobra flags to

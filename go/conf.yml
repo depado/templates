@@ -7,7 +7,7 @@ if: conf
 # Logger configuration
 log:
   level: info   # one of debug, info, warn, error
-  format: json  # one of json, text
+  format: auto  # one of auto, json, text
   source: false # display the source file and line of the log call
   color: auto   # colorized output: auto, always, never (only applies to text format)
 {{ if .gin -}}

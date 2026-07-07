@@ -40,6 +40,16 @@ Configuration is loaded with the following precedence:
 ./{{ .name }} --conf custom.yml # use a specific config file
 APPNAME_LOG_LEVEL=debug ./{{ .name }}  # env var override
 ```
+
+Logging uses [`log/slog`](https://pkg.go.dev/log/slog) with the [`tint`](https://github.com/lmittmann/tint) handler for text output. The log format defaults to `auto`:
+
+| `--log.format` | Behavior |
+|----------------|----------|
+| `auto` *(default)* | Text (colorized) when stderr is a TTY, JSON otherwise — pipelines and containers get JSON automatically |
+| `json` | Always `slog.NewJSONHandler` |
+| `text` | Always `tint.NewHandler` |
+
+The `--log.color` flag controls whether text output uses ANSI colors (`auto` / `always` / `never`).
 {{ end }}
 {{ if .gin_otel }}
 ## OpenTelemetry
