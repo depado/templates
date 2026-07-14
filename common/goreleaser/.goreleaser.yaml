@@ -68,10 +68,10 @@ source:
 checksum:
   name_template: 'checksums.txt'
 
-<< if .sbom >>
+<< if .sbom ->>
 sboms:
   - artifacts: source
-<< end >>
+<<- end >>
 
 snapshot:
   version_template: "{{ incpatch .Version }}-next"
@@ -113,6 +113,26 @@ release:
   prerelease: auto
   mode: replace
   name_template: "v{{ .Version }}"
+  header: |
+    ## << .name >> {{ .Version }}
+
+    << .description >>
+
+    ### Quick Install
+
+    ```bash
+    curl -sSL "https://<< .gitserver >>/<< .owner >>/<< .name >>/releases/download/v{{ .Version }}/<< .name >>_$(go env GOOS)_x86_64.tar.gz" | tar xz
+
+    # Or via Go
+    go install << .gitserver >>/<< .owner >>/<< .name >>@v{{ .Version }}
+    ```
+    << if .docker >>
+    ### Docker
+
+    ```bash
+    docker pull ghcr.io/<< .owner >>/<< .name >>:{{ .Version }}
+    ```
+    <<- end >>
 
 git:
   ignore_tags:
