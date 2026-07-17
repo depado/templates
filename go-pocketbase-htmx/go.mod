@@ -3,7 +3,7 @@ module {{.gitserver}}/{{.owner}}/{{.name}}
 go 1.26
 
 require (
-	github.com/Oudwins/tailwind-merge-go v0.2.1
+	github.com/Oudwins/tailwind-merge-go v0.2.2
 	github.com/a-h/templ v0.3.1020
 	github.com/donseba/go-htmx v1.13.1
 	github.com/pocketbase/pocketbase v0.39.7
