@@ -43,7 +43,7 @@ templ Base(title string) {
 			</style>
 			<link rel="stylesheet" href="/assets/css/output.css"/>
 			@components.Scripts()
-			<title id="page-title">{ title } - {{.name}}</title>
+			<title id="page-title">{ title } - datastar-pb-shadcn-templui</title>
 		</head>
 		<body
 			data-on:popstate__window="@get(location.pathname)"
@@ -73,6 +73,15 @@ templ Base(title string) {
 					if (e.detail && e.detail.type === 'finished') syncNavActive();
 				});
 				window.addEventListener('popstate', syncNavActive);
+				// ⌘K / Ctrl+K opens the command palette (only on pages that
+				// render it).
+				document.addEventListener('keydown', function (e) {
+					if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+						e.preventDefault();
+						var dialog = document.getElementById('command-palette');
+						if (dialog) window.tui?.dialog?.toggle('command-palette');
+					}
+				});
 				function toggleTheme() {
 					if (document.documentElement.classList.contains('dark')) {
 						document.documentElement.classList.remove('dark');

@@ -28,7 +28,7 @@ project manually:
 # Initialize shadcn-templ (writes components.json, generates globals.css, installs utils)
 shadcn-templ init
 # Install the components
-shadcn-templ add sidebar button input label field card avatar dropdown-menu icon toast separator switch
+shadcn-templ add sidebar button input label field card avatar dropdown-menu icon toast separator switch command textarea
 # Download Datastar and the Geist fonts
 mkdir -p assets/js assets/fonts/geist
 curl -sL https://shadcn-templ.com/assets/fonts/geist/geist-variable.woff2 -o assets/fonts/geist/geist-variable.woff2

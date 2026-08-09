@@ -48,7 +48,7 @@ after:
   - cmd: "shadcn-templ init"
     echo: "Initialized shadcn-templ"
     failure: stop
-  - cmd: "shadcn-templ add sidebar button input label field card avatar dropdown-menu icon toast separator switch"
+  - cmd: "shadcn-templ add sidebar button input label field card avatar dropdown-menu icon toast separator switch command textarea"
     echo: "Installed shadcn-templ components"
     failure: stop
   - cmd: "mkdir -p assets/js assets/fonts/geist"

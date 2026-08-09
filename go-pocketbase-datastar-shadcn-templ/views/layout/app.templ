@@ -3,6 +3,8 @@ package layout
 import (
 	"{{.gitserver}}/{{.owner}}/{{.name}}/components/avatar"
 	"{{.gitserver}}/{{.owner}}/{{.name}}/components/button"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/command"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/dialog"
 	"{{.gitserver}}/{{.owner}}/{{.name}}/components/dropdownmenu"
 	"{{.gitserver}}/{{.owner}}/{{.name}}/components/icon"
 	"{{.gitserver}}/{{.owner}}/{{.name}}/components/sidebar"
@@ -43,6 +45,16 @@ templ AppLayout(props AppLayoutProps) {
 				<header class="flex h-14 items-center gap-2 border-b px-4">
 					@sidebar.Trigger()
 					<h1 class="text-lg font-semibold flex-1"><span id="page-heading">{ props.Title }</span></h1>
+					@button.Button(button.Props{
+						Variant: button.VariantOutline,
+						Size:    button.SizeSm,
+						Class:   "w-40 justify-start text-muted-foreground",
+						Attributes: dialog.TriggerFor("command-palette"),
+					}) {
+						@icon.Search(icon.Props{Class: "size-4"})
+						<span>Search...</span>
+						<kbd class="ml-auto pointer-events-none inline-flex h-5 items-center gap-1 rounded bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">⌘K</kbd>
+					}
 					<span data-indicator="navloading" class="size-4 animate-spin text-muted-foreground" data-show="$navloading" style="display:none">@icon.LoaderCircle(icon.Props{Class: "size-4 animate-spin"})</span>
 					@button.Button(button.Props{
 						Variant: button.VariantGhost,
@@ -59,6 +71,70 @@ templ AppLayout(props AppLayoutProps) {
 				<main id="main-content" class="flex-1 p-4 md:p-6">
 					{ children... }
 				</main>
+			}
+		}
+		@CommandPalette()
+	}
+}
+
+// CommandPalette is the ⌘K command menu: navigate, toggle the theme or sign
+// out. Items act on the bubbling "command-select" event (fires on click and
+// Enter), so the actions work with both keyboard and mouse.
+templ CommandPalette() {
+	@command.Dialog(command.DialogProps{ID: "command-palette"}) {
+		@command.Command() {
+			@command.Input(command.InputProps{Placeholder: "Type a command or search..."})
+			@command.List() {
+				@command.Empty() {
+					No results found.
+				}
+				@command.Group(command.GroupProps{Heading: "Navigation"}) {
+					@command.Item(command.ItemProps{
+						Value: "Dashboard home",
+						Attributes: templ.Attributes{
+							"data-on:command-select": "window.tui?.dialog?.close('command-palette'); @get('/'); history.pushState({}, '', '/')",
+						},
+					}) {
+						@icon.House(icon.Props{})
+						<span>Dashboard</span>
+						@command.Shortcut() {
+							⌘D
+						}
+					}
+					@command.Item(command.ItemProps{
+						Value: "Settings preferences",
+						Attributes: templ.Attributes{
+							"data-on:command-select": "window.tui?.dialog?.close('command-palette'); @get('/settings'); history.pushState({}, '', '/settings')",
+						},
+					}) {
+						@icon.Settings(icon.Props{})
+						<span>Settings</span>
+						@command.Shortcut() {
+							⌘S
+						}
+					}
+				}
+				@command.Separator()
+				@command.Group(command.GroupProps{Heading: "Actions"}) {
+					@command.Item(command.ItemProps{
+						Value: "Toggle theme toggle dark mode",
+						Attributes: templ.Attributes{
+							"data-on:command-select": "window.tui?.dialog?.close('command-palette'); toggleTheme()",
+						},
+					}) {
+						@icon.SunMoon(icon.Props{})
+						<span>Toggle theme</span>
+					}
+					@command.Item(command.ItemProps{
+						Value: "Sign out logout",
+						Attributes: templ.Attributes{
+							"data-on:command-select": "window.tui?.dialog?.close('command-palette'); @post('/logout')",
+						},
+					}) {
+						@icon.LogOut(icon.Props{})
+						<span>Sign out</span>
+					}
+				}
 			}
 		}
 	}
