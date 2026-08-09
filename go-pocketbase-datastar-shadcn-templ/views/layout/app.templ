@@ -97,9 +97,6 @@ templ CommandPalette() {
 					}) {
 						@icon.House(icon.Props{})
 						<span>Dashboard</span>
-						@command.Shortcut() {
-							⌘D
-						}
 					}
 					@command.Item(command.ItemProps{
 						Value: "Settings preferences",
@@ -109,9 +106,6 @@ templ CommandPalette() {
 					}) {
 						@icon.Settings(icon.Props{})
 						<span>Settings</span>
-						@command.Shortcut() {
-							⌘S
-						}
 					}
 				}
 				@command.Separator()
