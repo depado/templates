@@ -1,0 +1,8 @@
+version: "2"
+
+# Components are vendored from the shadcn-templ registry; upstream code is
+# kept as-is so `shadcn-templ add --overwrite` updates stay clean.
+linters:
+  exclusions:
+    paths:
+      - components

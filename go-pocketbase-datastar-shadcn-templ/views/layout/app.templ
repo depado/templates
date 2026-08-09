@@ -1,0 +1,150 @@
+package layout
+
+import (
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/avatar"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/button"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/dropdownmenu"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/icon"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/sidebar"
+
+	"{{.gitserver}}/{{.owner}}/{{.name}}/models"
+)
+
+type AppLayoutProps struct {
+	Title       string
+	CurrentPath string
+	User        *models.User
+	// SidebarCollapsed is the initial sidebar state, restored from the
+	// client-side "sidebar_state" cookie on full page loads.
+	SidebarCollapsed bool
+}
+
+templ AppLayout(props AppLayoutProps) {
+	@Base(props.Title) {
+		@sidebar.Provider(sidebar.ProviderProps{DisableDefaultOpen: props.SidebarCollapsed}) {
+			@sidebar.Sidebar(sidebar.Props{
+				Variant:     sidebar.VariantInset,
+				Collapsible: sidebar.CollapsibleIcon,
+			}) {
+				@sidebar.Header() {
+					<a href="/" class="flex items-center gap-2 px-2">
+						@icon.Rocket(icon.Props{Class: "size-5"})
+						<span class="font-semibold text-lg truncate group-data-[collapsible=icon]:hidden">Datastar PB</span>
+					</a>
+				}
+				@sidebar.Content() {
+					@Nav(props.CurrentPath, props.User)
+				}
+				@sidebar.Footer() {
+					@UserMenu(props.User)
+				}
+			}
+			@sidebar.Inset() {
+				<header class="flex h-14 items-center gap-2 border-b px-4">
+					@sidebar.Trigger()
+					<h1 class="text-lg font-semibold flex-1"><span id="page-heading">{ props.Title }</span></h1>
+					<span data-indicator="navloading" class="size-4 animate-spin text-muted-foreground" data-show="$navloading" style="display:none">@icon.LoaderCircle(icon.Props{Class: "size-4 animate-spin"})</span>
+					@button.Button(button.Props{
+						Variant: button.VariantGhost,
+						Size:    button.SizeIcon,
+						Attributes: templ.Attributes{
+							"onclick":    "toggleTheme()",
+							"aria-label": "Toggle theme",
+						},
+					}) {
+						<span class="hidden dark:inline">@icon.Sun(icon.Props{Class: "size-4"})</span>
+						<span class="inline dark:hidden">@icon.Moon(icon.Props{Class: "size-4"})</span>
+					}
+				</header>
+				<main id="main-content" class="flex-1 p-4 md:p-6">
+					{ children... }
+				</main>
+			}
+		}
+	}
+}
+
+// Nav renders the sidebar menu with the active state set from the current
+// path on full page loads. On fragment navigation the active state is synced
+// client-side by base.templ's syncNavActive().
+templ Nav(currentPath string, user *models.User) {
+	<nav id="main-nav" class="flex min-h-0 flex-1 flex-col">
+		@sidebar.Group() {
+			@sidebar.Menu(sidebar.MenuProps{Class: "gap-1"}) {
+				@sidebar.MenuItem() {
+					@sidebar.MenuButton(sidebar.MenuButtonProps{
+						Href:     "/",
+						IsActive: currentPath == "/",
+						Tooltip:  "Dashboard",
+						Attributes: templ.Attributes{
+							"data-on:click__prevent": `@get('/'); history.pushState({}, '', '/')`,
+							"data-indicator":         "navloading",
+						},
+					}) {
+						@icon.House(icon.Props{})
+						<span>Dashboard</span>
+					}
+				}
+			}
+		}
+		</nav>
+	}
+
+templ UserMenu(user *models.User) {
+	@sidebar.Menu(sidebar.MenuProps{Class: "gap-1"}) {
+		@sidebar.MenuItem() {
+			if user != nil {
+				@dropdownmenu.DropdownMenu() {
+					@sidebar.MenuButton(sidebar.MenuButtonProps{
+						Size:       sidebar.MenuButtonSizeLg,
+						Attributes: dropdownmenu.Trigger(ctx),
+					}) {
+						@avatar.Avatar(avatar.Props{Class: "size-8"}) {
+							if user.Avatar() != "" {
+								@avatar.Image(avatar.ImageProps{
+									Src: "/api/files/users/" + user.Id + "/" + user.Avatar(),
+									Alt: user.Name(),
+								})
+							}
+							@avatar.Fallback() {
+								{ user.Initials() }
+							}
+						}
+						<div class="flex flex-col flex-1 text-left">
+							<span class="text-sm font-medium">{ user.Name() }</span>
+							<span class="text-xs text-muted-foreground">{ user.Email() }</span>
+						</div>
+						@icon.ChevronsUpDown(icon.Props{Class: "ml-auto size-4"})
+					}
+					@dropdownmenu.Content(dropdownmenu.ContentProps{
+						Side:  dropdownmenu.SideTop,
+						Align: dropdownmenu.AlignStart,
+						Class: "w-56",
+					}) {						@dropdownmenu.Item(dropdownmenu.ItemProps{
+							Href: "/settings",
+							Attributes: templ.Attributes{
+								"data-on:click__prevent": `@get('/settings'); history.pushState({}, '', '/settings')`,
+							},
+						}) {
+							<span class="flex items-center">
+								@icon.Settings(icon.Props{Class: "size-4 mr-2"})
+								Settings
+							</span>
+						}
+						@dropdownmenu.Separator()
+						@dropdownmenu.Item(dropdownmenu.ItemProps{
+							Attributes: templ.Attributes{
+								"data-on:click__prevent": `@post('/logout')`,
+							},
+						}) {
+							<span class="flex items-center">
+								@icon.LogOut(icon.Props{Class: "size-4 mr-2"})
+								Sign out
+							</span>
+						}
+					}
+				}
+			}
+		}
+	}
+}

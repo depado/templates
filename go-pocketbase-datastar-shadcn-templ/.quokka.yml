@@ -1,0 +1,72 @@
+name: "Go PocketBase + Datastar + shadcn-templ Template"
+version: "0.1.0"
+description: "Generates a Go project using PocketBase as the backend framework, shadcn-templ for UI components, and Datastar for SPA navigation"
+delimiters: ["{{", "}}"]
+variables:
+  name:
+    prompt: "Name:"
+    help: "Project's name"
+    required: true
+    default: "$output"
+  owner:
+    prompt: "Owner:"
+    help: "Organization or username"
+    required: true
+    default: "$username"
+  gitserver:
+    prompt: "Git Server:"
+    default: "github.com"
+    help: "Git server, used for import path and module declaration"
+  description:
+    prompt: "Project's description:"
+    required: true
+    default: "PocketBase + Datastar + shadcn-templ project"
+  docker:
+    confirm: true
+    prompt: "Add Dockerfile and dockerignore?"
+  goreleaser:
+    confirm: true
+    prompt: "Enable goreleaser?"
+
+includes:
+  - source: ../common/license
+    confirm: true
+    prompt: "Add a LICENSE file?"
+  - source: ../common/ci
+    confirm: true
+    prompt: "Add CI workflow?"
+  - source: ../common/renovate
+    confirm: true
+    prompt: "Add Renovate config?"
+  - source: ../common/goreleaser
+    if: goreleaser
+
+# Mirrors the Makefile bootstrap: install shadcn-templ components, download
+# Datastar and the Geist fonts, build assets and tidy the module. Each command
+# is prompted for confirmation unless qk is run with --trusted.
+after:
+  - cmd: "shadcn-templ init"
+    echo: "Initialized shadcn-templ"
+    failure: stop
+  - cmd: "shadcn-templ add sidebar button input label field card avatar dropdown-menu icon toast separator switch"
+    echo: "Installed shadcn-templ components"
+    failure: stop
+  - cmd: "mkdir -p assets/js assets/fonts/geist"
+    failure: stop
+  - cmd: "curl -sL https://shadcn-templ.com/assets/fonts/geist/geist-variable.woff2 -o assets/fonts/geist/geist-variable.woff2"
+    echo: "Downloaded Geist fonts"
+    failure: stop
+  - cmd: "curl -sL https://shadcn-templ.com/assets/fonts/geist/geist-mono-variable.woff2 -o assets/fonts/geist/geist-mono-variable.woff2"
+    failure: stop
+  - cmd: "curl -sL https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.2/bundles/datastar.js -o assets/js/datastar.js"
+    echo: "Downloaded Datastar"
+    failure: stop
+  - cmd: "templ generate ./..."
+    echo: "Generated templ code"
+    failure: stop
+  - cmd: "tailwindcss -i ./assets/css/globals.css -o ./assets/css/output.css --minify"
+    echo: "Built Tailwind CSS"
+    failure: stop
+  - cmd: "go mod tidy"
+    echo: "Tidied Go module"
+    failure: stop

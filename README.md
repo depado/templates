@@ -1,6 +1,6 @@
 # templates
 
-A collection of [Quokka](https://github.com/Depado/quokka) templates for Go projects — from a minimal CLI app to a full-stack PocketBase + HTMX + TemplUI web application.
+A collection of [Quokka](https://github.com/Depado/quokka) templates for Go projects — from a minimal CLI app to full-stack PocketBase web applications (TemplUI + HTMX or Datastar + shadcn-templ).
 
 ## Go
 
@@ -114,6 +114,43 @@ This template generates a full-stack Go web application using PocketBase, [Templ
 - License selector
 - Optional [renovate](https://github.com/renovatebot/renovate) configuration
 - Optional example configuration file with default values for the app
+- Optional docker support with [distroless](https://github.com/GoogleContainerTools/distroless) on port 8090
+- Optional CI via GitHub Actions (build, test, lint)
+- Optional [goreleaser](https://goreleaser.com/) config with GitHub Actions release workflow
+
+## Go PocketBase + Datastar + shadcn-templ
+
+### Usage
+
+```sh
+$ # Using SSH
+$ qk git@github.com:Depado/templates.git -p go-pocketbase-datastar-shadcn-templ myproject
+$ # Using HTTPS
+$ qk https://github.com/Depado/templates.git -p go-pocketbase-datastar-shadcn-templ myproject
+```
+
+### Description
+
+This template generates a full-stack Go web application using PocketBase, [Templ](https://templ.guide/), [shadcn-templ](https://shadcn-templ.com/), [Datastar](https://data-star.dev/), and [Tailwind CSS v4](https://tailwindcss.com/).
+
+- [PocketBase](https://pocketbase.io/) backend with built-in admin UI, database, and authentication
+- [Templ](https://templ.guide/) for type-safe server-side HTML templating
+- [shadcn-templ](https://shadcn-templ.com/) component library: sidebar, cards, buttons, inputs, toasts, avatars, dropdown menus, icons
+- [Datastar](https://data-star.dev/) for SPA-like fragment navigation (morph-by-ID, SSE responses, `history.pushState`/`popstate` support)
+- [Tailwind CSS v4](https://tailwindcss.com/) with dark mode support and oklch color tokens
+- Cookie-based authentication with login/logout flows (Datastar backend actions)
+- Responsive sidebar with collapse (state persisted via cookie), mobile sheet, theme toggle, and user dropdown
+- Dashboard and Settings pages with inline form validation (field-preserving morph)
+- Toasts with a global fetch-error handler
+- Same-origin CSRF protection on state-changing endpoints
+- Real-time hot reload: `task dev` runs templ proxy + tailwind watch in parallel via [Taskfile](https://taskfile.dev/)
+- Asset embedding with Go's `embed` package
+- User model with avatar (initials fallback) and password change support
+- Cobra CLI with `version` command integrated into PocketBase's root command
+- Viper-based configuration (dev mode toggle, env var prefix, `--conf` flag for custom config path)
+- Inject version information (commit hash, latest tag, build date) with Makefile
+- License selector
+- Optional [renovate](https://github.com/renovatebot/renovate) configuration
 - Optional docker support with [distroless](https://github.com/GoogleContainerTools/distroless) on port 8090
 - Optional CI via GitHub Actions (build, test, lint)
 - Optional [goreleaser](https://goreleaser.com/) config with GitHub Actions release workflow

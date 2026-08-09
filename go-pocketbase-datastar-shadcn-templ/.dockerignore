@@ -1,0 +1,9 @@
+---
+if: docker
+---
+{{.name}}
+pb_data/
+*.db
+*.db-journal
+*.db-shm
+*.db-wal

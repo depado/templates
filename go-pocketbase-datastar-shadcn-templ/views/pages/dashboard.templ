@@ -1,0 +1,39 @@
+package pages
+
+import (
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/card"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/views/layout"
+)
+
+// DashboardFragment is the Datastar response for fragment navigation: the
+// title, heading and main content are morphed into the DOM by ID. The sidebar
+// nav active state is synced client-side (see layout/base.templ).
+templ DashboardFragment(props layout.AppLayoutProps) {
+	<title id="page-title">Dashboard - {{.name}}</title>
+	<span id="page-heading">Dashboard</span>
+	<main id="main-content" class="flex-1 p-4 md:p-6">
+		@DashboardContent()
+	</main>
+}
+
+templ DashboardPage(props layout.AppLayoutProps) {
+	@layout.AppLayout(props) {
+		@DashboardContent()
+	}
+}
+
+templ DashboardContent() {
+	<div class="grid gap-4">
+		@card.Card() {
+			@card.Header() {
+				@card.Title() { Welcome }
+				@card.Description() { You are logged in to {{.name}}. }
+			}
+			@card.Content() {
+				<p class="text-sm text-muted-foreground">
+					Navigate with the sidebar — pages swap into <code class="font-mono">#main-content</code> via Datastar without a full reload.
+				</p>
+			}
+		}
+	</div>
+}

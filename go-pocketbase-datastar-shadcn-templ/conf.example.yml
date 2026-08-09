@@ -1,0 +1,7 @@
+# Configuration file for {{.name}}
+# Can be overridden with environment variables (uppercased, prefixed with DATASTAR_)
+
+# Enable development mode (automigrate, etc.)
+dev: false
+
+# Add your configuration here

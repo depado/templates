@@ -1,0 +1,54 @@
+package pages
+
+import (
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/button"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/card"
+	"{{.gitserver}}/{{.owner}}/{{.name}}/components/input"
+
+	"{{.gitserver}}/{{.owner}}/{{.name}}/views/layout"
+)
+
+templ LoginPage() {
+	@layout.Base("Login") {
+		<div class="min-h-screen flex items-center justify-center p-4">
+			@card.Card(card.Props{Class: "w-full max-w-sm"}) {
+				@card.Header() {
+					@card.Title() { Sign In }
+					@card.Description() { Enter your credentials to continue }
+				}
+				@card.Content() {
+					<form id="login-form" data-on:submit="@post('/login', {contentType: 'form'})" class="space-y-4">
+						<p id="login-message" class="empty:hidden"></p>
+						@input.Input(input.Props{
+							Type:        "email",
+							Name:        "email",
+							Placeholder: "you@example.com",
+							Required:    true,
+						})
+						@input.Input(input.Props{
+							Type:        "password",
+							Name:        "password",
+							Placeholder: "Password",
+							Required:    true,
+						})
+					</form>
+				}
+				@card.Footer() {
+					@button.Button(button.Props{
+						Type:  button.TypeSubmit,
+						Form:  "login-form",
+						Class: "w-full",
+					}) {
+						Sign In
+					}
+				}
+			}
+		</div>
+	}
+}
+
+// LoginMessage is patched into #login-message by the login POST handler; the
+// morph preserves the typed values in the surrounding form.
+templ LoginMessage(msg string) {
+	<p id="login-message" class="text-sm text-destructive" role="alert">{ msg }</p>
+}
