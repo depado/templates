@@ -9,5 +9,5 @@ require (
 	github.com/pocketbase/pocketbase v0.39.11
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
-	github.com/templui/templui v1.13.0
+	github.com/templui/templui v1.13.1
 )
