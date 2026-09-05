@@ -4,7 +4,7 @@ go 1.26
 
 require (
 	{{ if .gin -}}
-	github.com/gin-contrib/cors v1.7.7
+	github.com/gin-contrib/cors v1.7.8
 	github.com/gin-gonic/gin v1.12.0
 	{{- if .gin_otel }}
 	go.opentelemetry.io/contrib/bridges/otelslog v0.20.1
