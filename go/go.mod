@@ -17,7 +17,7 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.47.0
 	{{ end -}}
 	{{ end -}}
-	github.com/lmittmann/tint v1.2.0
+	github.com/lmittmann/tint v1.2.1
 	github.com/mattn/go-isatty v0.0.24
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
